@@ -3,17 +3,18 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		48930577D6A567267106FAD3 /* Pods_Weather.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F960DCA40D91851FB5D7D5B0 /* Pods_Weather.framework */; };
 		49044E0326302F8F0061A719 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E0226302F8F0061A719 /* AppDelegate.swift */; };
 		49044E0526302F8F0061A719 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E0426302F8F0061A719 /* SceneDelegate.swift */; };
-		49044E0726302F8F0061A719 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E0626302F8F0061A719 /* ViewController.swift */; };
+		49044E0726302F8F0061A719 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E0626302F8F0061A719 /* MapViewController.swift */; };
 		49044E0C26302F900061A719 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49044E0B26302F900061A719 /* Assets.xcassets */; };
 		49044E0F26302F900061A719 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49044E0D26302F900061A719 /* LaunchScreen.storyboard */; };
 		49044E182630314B0061A719 /* APIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E172630314B0061A719 /* APIKey.swift */; };
+		49044E2C2630500F0061A719 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E2B2630500F0061A719 /* MapViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,11 +22,12 @@
 		49044DFF26302F8F0061A719 /* Weather.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Weather.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49044E0226302F8F0061A719 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		49044E0426302F8F0061A719 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		49044E0626302F8F0061A719 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		49044E0626302F8F0061A719 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		49044E0B26302F900061A719 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		49044E0E26302F900061A719 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		49044E1026302F900061A719 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		49044E172630314B0061A719 /* APIKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKey.swift; sourceTree = "<group>"; };
+		49044E2B2630500F0061A719 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		911744B6904D13B09BE0E620 /* Pods-Weather.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Weather.release.xcconfig"; path = "Target Support Files/Pods-Weather/Pods-Weather.release.xcconfig"; sourceTree = "<group>"; };
 		F960DCA40D91851FB5D7D5B0 /* Pods_Weather.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Weather.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -65,13 +67,38 @@
 			children = (
 				49044E0226302F8F0061A719 /* AppDelegate.swift */,
 				49044E0426302F8F0061A719 /* SceneDelegate.swift */,
-				49044E0626302F8F0061A719 /* ViewController.swift */,
-				49044E172630314B0061A719 /* APIKey.swift */,
+				49044E2F263050170061A719 /* Model */,
+				49044E2A26304FFE0061A719 /* ViewModel */,
+				49044E2826304FF80061A719 /* View */,
 				49044E0B26302F900061A719 /* Assets.xcassets */,
 				49044E0D26302F900061A719 /* LaunchScreen.storyboard */,
 				49044E1026302F900061A719 /* Info.plist */,
 			);
 			path = Weather;
+			sourceTree = "<group>";
+		};
+		49044E2826304FF80061A719 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				49044E0626302F8F0061A719 /* MapViewController.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		49044E2A26304FFE0061A719 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				49044E2B2630500F0061A719 /* MapViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		49044E2F263050170061A719 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				49044E172630314B0061A719 /* APIKey.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		66B43B84E2F3346F9CAAAA71 /* Pods */ = {
@@ -80,7 +107,6 @@
 				1A4FB42114AD661F94896B4C /* Pods-Weather.debug.xcconfig */,
 				911744B6904D13B09BE0E620 /* Pods-Weather.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -104,6 +130,7 @@
 				49044DFC26302F8F0061A719 /* Frameworks */,
 				49044DFD26302F8F0061A719 /* Resources */,
 				A893902750ED673984F2FE00 /* [CP] Embed Pods Frameworks */,
+				49044E2526303B620061A719 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -159,6 +186,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		49044E2526303B620061A719 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
 		A45CEB9F0F653F25B254E151 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -205,7 +250,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49044E0726302F8F0061A719 /* ViewController.swift in Sources */,
+				49044E0726302F8F0061A719 /* MapViewController.swift in Sources */,
+				49044E2C2630500F0061A719 /* MapViewModel.swift in Sources */,
 				49044E0326302F8F0061A719 /* AppDelegate.swift in Sources */,
 				49044E182630314B0061A719 /* APIKey.swift in Sources */,
 				49044E0526302F8F0061A719 /* SceneDelegate.swift in Sources */,
