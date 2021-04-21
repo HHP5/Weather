@@ -15,6 +15,7 @@
 		49044E0F26302F900061A719 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49044E0D26302F900061A719 /* LaunchScreen.storyboard */; };
 		49044E182630314B0061A719 /* APIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E172630314B0061A719 /* APIKey.swift */; };
 		49044E2C2630500F0061A719 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E2B2630500F0061A719 /* MapViewModel.swift */; };
+		49044E32263051FD0061A719 /* StartCoordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E31263051FD0061A719 /* StartCoordinate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		49044E1026302F900061A719 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		49044E172630314B0061A719 /* APIKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKey.swift; sourceTree = "<group>"; };
 		49044E2B2630500F0061A719 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
+		49044E31263051FD0061A719 /* StartCoordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCoordinate.swift; sourceTree = "<group>"; };
 		911744B6904D13B09BE0E620 /* Pods-Weather.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Weather.release.xcconfig"; path = "Target Support Files/Pods-Weather/Pods-Weather.release.xcconfig"; sourceTree = "<group>"; };
 		F960DCA40D91851FB5D7D5B0 /* Pods_Weather.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Weather.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -96,6 +98,7 @@
 		49044E2F263050170061A719 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				49044E31263051FD0061A719 /* StartCoordinate.swift */,
 				49044E172630314B0061A719 /* APIKey.swift */,
 			);
 			path = Model;
@@ -254,6 +257,7 @@
 				49044E2C2630500F0061A719 /* MapViewModel.swift in Sources */,
 				49044E0326302F8F0061A719 /* AppDelegate.swift in Sources */,
 				49044E182630314B0061A719 /* APIKey.swift in Sources */,
+				49044E32263051FD0061A719 /* StartCoordinate.swift in Sources */,
 				49044E0526302F8F0061A719 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

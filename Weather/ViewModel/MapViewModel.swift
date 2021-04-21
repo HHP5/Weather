@@ -8,6 +8,6 @@
 import Foundation
 
 class MapViewModel {
-	let startLatitude = 45.834901
-	let startLongitude = -100.678976
+//	let startLatitude = 45.834901
+//	let startLongitude = -100.678976
 }

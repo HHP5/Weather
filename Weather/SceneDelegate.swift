@@ -19,8 +19,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		window?.overrideUserInterfaceStyle = .light
 
 		window?.makeKeyAndVisible()
-	
-		let navBar = UINavigationController(rootViewController: MapViewController())
+		let mapViewController = MapViewController()
+
+		let navBar = UINavigationController(rootViewController: mapViewController)
 		window?.rootViewController = navBar
 		
 	}
