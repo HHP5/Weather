@@ -16,6 +16,7 @@
 		49044E182630314B0061A719 /* APIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E172630314B0061A719 /* APIKey.swift */; };
 		49044E2C2630500F0061A719 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E2B2630500F0061A719 /* MapViewModel.swift */; };
 		49044E32263051FD0061A719 /* StartCoordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E31263051FD0061A719 /* StartCoordinate.swift */; };
+		499719932632FC79007D7BD3 /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499719922632FC79007D7BD3 /* PopupView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		49044E172630314B0061A719 /* APIKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKey.swift; sourceTree = "<group>"; };
 		49044E2B2630500F0061A719 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		49044E31263051FD0061A719 /* StartCoordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCoordinate.swift; sourceTree = "<group>"; };
+		499719922632FC79007D7BD3 /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupView.swift; sourceTree = "<group>"; };
 		911744B6904D13B09BE0E620 /* Pods-Weather.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Weather.release.xcconfig"; path = "Target Support Files/Pods-Weather/Pods-Weather.release.xcconfig"; sourceTree = "<group>"; };
 		F960DCA40D91851FB5D7D5B0 /* Pods_Weather.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Weather.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -83,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				49044E0626302F8F0061A719 /* MapViewController.swift */,
+				499719922632FC79007D7BD3 /* PopupView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -253,6 +256,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				499719932632FC79007D7BD3 /* PopupView.swift in Sources */,
 				49044E0726302F8F0061A719 /* MapViewController.swift in Sources */,
 				49044E2C2630500F0061A719 /* MapViewModel.swift in Sources */,
 				49044E0326302F8F0061A719 /* AppDelegate.swift in Sources */,
