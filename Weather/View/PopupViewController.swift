@@ -1,17 +1,25 @@
 //
-//  PopupView.swift
+//  PopupViewController.swift
 //  Weather
 //
-//  Created by Екатерина Григорьева on 23.04.2021.
+//  Created by Екатерина Григорьева on 25.04.2021.
 //
 
 import UIKit
 
-class PopupView: UIView {
+class PopupViewController: UIViewController {
+	var viewModel: PopupViewModelType? {
+		willSet(viewModel) {
+			guard let viewModel = viewModel else { return }
+			
+			nameLabel.text = viewModel.cityName
+			coordinateLabel.text = "\(viewModel.latitude)   \(viewModel.longitude)"
+		}
+	}
+	
 	private let nameLabel: UILabel = {
 		let label = UILabel()
 		label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
-		label.text = "City Name"
 		return label
 	}()
 	
@@ -19,7 +27,6 @@ class PopupView: UIView {
 		let label = UILabel()
 		label.font = UIFont.systemFont(ofSize: 17, weight: .light)
 		label.textColor = .lightGray
-		label.text = "40.10667540,-88.76542070>"
 		return label
 	}()
 	
@@ -56,41 +63,57 @@ class PopupView: UIView {
 		image?.withTintColor(.systemBlue)
 		button.setImage(image, for: .normal)
 		button.frame.size = CGSize(width: 15, height: 15)
-		button.addTarget(self, action: #selector(closePopup), for: .allEvents)
 		return button
 	}()
 	
 	@objc private func closePopup() {
-		print("Close")
+//		self.dismiss(animated: true, completion: nil)
+		self.navigationController?.popViewController(animated: true)
 	}
 	
-	override init(frame: CGRect) {
-		super.init(frame: frame)
-		
-		self.frame = UIScreen.main.bounds
+	@objc private func showWeather() {
+		let destinationVC = WeatherViewController()
+//		destinationVC.modalPresentationStyle = .fullScreen
+//		destinationVC.modalTransitionStyle = .flipHorizontal
+		print("ffffff")
+		self.navigationController?.pushViewController(destinationVC, animated: true)
+	}
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
 		setConstraints()
-	}
-	
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
+		closeButton.addTarget(self, action: #selector(closePopup), for: .touchUpInside)
+		showWeatherButton.addTarget(self, action: #selector(showWeather), for: .touchUpInside)
 	}
 	
 	private func setConstraints() {
-		self.addSubview(container)
-
+		setContainer()
+		setLabelStack()
+		setShowWeatherButton()
+		setCloseButton()
+		
+	}
+	
+	private func setContainer() {
+		view.addSubview(container)
+		
 		container.translatesAutoresizingMaskIntoConstraints = false
 		container.heightAnchor.constraint(equalToConstant: 170).isActive = true
-		container.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20).isActive = true
-		container.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 30).isActive = true
-		container.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -30).isActive = true
-		
+		container.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
+		container.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30).isActive = true
+		container.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30).isActive = true
+	}
+	
+	private func setLabelStack() {
 		container.addSubview(labelStack)
 		
 		labelStack.translatesAutoresizingMaskIntoConstraints = false
 		labelStack.topAnchor.constraint(equalTo: container.topAnchor, constant: 20).isActive = true
 		labelStack.leftAnchor.constraint(equalTo: container.leftAnchor, constant: 20).isActive = true
 		labelStack.rightAnchor.constraint(equalTo: container.rightAnchor, constant: -20).isActive = true
-		
+	}
+	
+	private func setShowWeatherButton() {
 		container.addSubview(showWeatherButton)
 		
 		showWeatherButton.translatesAutoresizingMaskIntoConstraints = false
@@ -98,11 +121,13 @@ class PopupView: UIView {
 		showWeatherButton.leftAnchor.constraint(equalTo: container.leftAnchor, constant: 15).isActive = true
 		showWeatherButton.rightAnchor.constraint(equalTo: container.rightAnchor, constant: -15).isActive = true
 		showWeatherButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-		
+	}
+	
+	private func setCloseButton() {
 		container.addSubview(closeButton)
 		closeButton.translatesAutoresizingMaskIntoConstraints = false
 		closeButton.topAnchor.constraint(equalTo: labelStack.topAnchor).isActive = true
 		closeButton.rightAnchor.constraint(equalTo: showWeatherButton.rightAnchor).isActive = true
-		
 	}
+	
 }

@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import MapKit
 
 class MapViewModel {
-//	let startLatitude = 45.834901
-//	let startLongitude = -100.678976
+	func cityNameAndCoordinateInPoint(location: CLLocation, city name: String) -> PopupViewModelType {
+		return PopupViewModel(location: location, cityName: name)
+	}
 }

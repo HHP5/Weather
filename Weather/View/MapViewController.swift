@@ -36,6 +36,7 @@ class MapViewController: UIViewController {
 		return searchController
 	}()
 	var point: [MKPointAnnotation] = []
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = .white
@@ -80,10 +81,15 @@ class MapViewController: UIViewController {
 		point.append(onePoint)
 		let currentLocation = CLLocation(latitude: onePoint.coordinate.latitude, longitude: onePoint.coordinate.longitude)
 		
-		currentLocation.lookUpLocationName { name in
-			print(name)
-			let popup = PopupView()
-			self.view.addSubview(popup)
+		currentLocation.lookUpLocationName { [self] name in
+			
+			let model = self.viewModel.cityNameAndCoordinateInPoint(location: currentLocation, city: name)
+			let popup = PopupViewController()
+			popup.viewModel = model
+//			popup.modalTransitionStyle = .coverVertical
+			popup.modalPresentationStyle = .overCurrentContext
+//			present(popup, animated: true, completion: nil)
+			self.navigationController?.pushViewController(popup, animated: true)
 		}
 	}
 	
@@ -115,8 +121,39 @@ class MapViewController: UIViewController {
 		alert.addAction(cancel)
 		present(alert, animated: true, completion: nil)
 	}
+	
 }
-
+extension CLLocation {
+	
+	func lookUpLocationName(_ handler: @escaping (String) -> Void) {
+		
+		lookUpPlaceMark { placemark in
+			if let locality = placemark?.locality {
+				
+				handler(locality)
+			}
+		}
+	}
+	
+	func lookUpPlaceMark(_ handler: @escaping (CLPlacemark?) -> Void) {
+		
+		let geocoder = CLGeocoder()
+		
+		// Look up the location and pass it to the completion handler
+		geocoder.reverseGeocodeLocation(self) { placemarks, error in
+			
+			guard error == nil else {
+				
+				handler(nil)
+				return
+			}
+			if let location = placemarks?.first {
+				print(location)
+				handler(location)
+			}
+		}
+	}
+}
 extension MapViewController: CLLocationManagerDelegate {
 	
 	func checkLocationAuthorization(status: CLAuthorizationStatus) {
@@ -145,9 +182,12 @@ extension MapViewController: CLLocationManagerDelegate {
 	//	 Zoom to current location
 	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 		if let location = locations.first {
+			
 			let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
 			let region = MKCoordinateRegion(center: location.coordinate, span: span)
-			mapView.setRegion(region, animated: true)		}
+			mapView.setRegion(region, animated: true)
+			
+		}
 	}
 	
 	func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
@@ -172,37 +212,6 @@ extension MapViewController: UISearchControllerDelegate {
 	
 }
 
-extension CLLocation {
-	
-	func lookUpLocationName(_ handler: @escaping (String) -> Void) {
-		
-		lookUpPlaceMark { placemark in
-			if let locality = placemark?.locality {
-				handler(locality)
-			}
-		}
-	}
-	
-	func lookUpPlaceMark(_ handler: @escaping (CLPlacemark?) -> Void) {
-		
-		let geocoder = CLGeocoder()
-		
-		// Look up the location and pass it to the completion handler
-		geocoder.reverseGeocodeLocation(self) { placemarks, error in
-			
-			guard error == nil else {
-			
-				handler(nil)
-				return
-			}
-			if let location = placemarks?.first {
-				print(location)
-				handler(location)
-			}
-		}
-	}
-}
-
 extension MapViewController: MKMapViewDelegate {
 	
 }
@@ -210,3 +219,12 @@ extension MapViewController: MKMapViewDelegate {
 extension MapViewController: UIGestureRecognizerDelegate {
 	
 }
+
+//extension MapViewController: PopupViewDelegate {
+//
+//	func showWeatherButtonPressed() {
+//		let destinationVC = WeatherViewController()
+//		print("cfffff")
+//		self.navigationController?.pushViewController(destinationVC, animated: true)
+//	}
+//}

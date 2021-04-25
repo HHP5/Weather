@@ -16,7 +16,11 @@
 		49044E182630314B0061A719 /* APIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E172630314B0061A719 /* APIKey.swift */; };
 		49044E2C2630500F0061A719 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E2B2630500F0061A719 /* MapViewModel.swift */; };
 		49044E32263051FD0061A719 /* StartCoordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49044E31263051FD0061A719 /* StartCoordinate.swift */; };
-		499719932632FC79007D7BD3 /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499719922632FC79007D7BD3 /* PopupView.swift */; };
+		499719A026355587007D7BD3 /* PopupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4997199F26355587007D7BD3 /* PopupViewModel.swift */; };
+		499719A4263555D1007D7BD3 /* PopupViewModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499719A3263555D1007D7BD3 /* PopupViewModelType.swift */; };
+		499719A8263566E3007D7BD3 /* LocationDegrees.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499719A7263566E3007D7BD3 /* LocationDegrees.swift */; };
+		499719AB26357667007D7BD3 /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499719AA26357667007D7BD3 /* WeatherViewController.swift */; };
+		499719B1263582D0007D7BD3 /* PopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499719B0263582D0007D7BD3 /* PopupViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,7 +35,11 @@
 		49044E172630314B0061A719 /* APIKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKey.swift; sourceTree = "<group>"; };
 		49044E2B2630500F0061A719 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		49044E31263051FD0061A719 /* StartCoordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCoordinate.swift; sourceTree = "<group>"; };
-		499719922632FC79007D7BD3 /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupView.swift; sourceTree = "<group>"; };
+		4997199F26355587007D7BD3 /* PopupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupViewModel.swift; sourceTree = "<group>"; };
+		499719A3263555D1007D7BD3 /* PopupViewModelType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupViewModelType.swift; sourceTree = "<group>"; };
+		499719A7263566E3007D7BD3 /* LocationDegrees.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDegrees.swift; sourceTree = "<group>"; };
+		499719AA26357667007D7BD3 /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
+		499719B0263582D0007D7BD3 /* PopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupViewController.swift; sourceTree = "<group>"; };
 		911744B6904D13B09BE0E620 /* Pods-Weather.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Weather.release.xcconfig"; path = "Target Support Files/Pods-Weather/Pods-Weather.release.xcconfig"; sourceTree = "<group>"; };
 		F960DCA40D91851FB5D7D5B0 /* Pods_Weather.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Weather.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -71,6 +79,7 @@
 			children = (
 				49044E0226302F8F0061A719 /* AppDelegate.swift */,
 				49044E0426302F8F0061A719 /* SceneDelegate.swift */,
+				499719A2263555AD007D7BD3 /* Protocols */,
 				49044E2F263050170061A719 /* Model */,
 				49044E2A26304FFE0061A719 /* ViewModel */,
 				49044E2826304FF80061A719 /* View */,
@@ -85,7 +94,8 @@
 			isa = PBXGroup;
 			children = (
 				49044E0626302F8F0061A719 /* MapViewController.swift */,
-				499719922632FC79007D7BD3 /* PopupView.swift */,
+				499719AA26357667007D7BD3 /* WeatherViewController.swift */,
+				499719B0263582D0007D7BD3 /* PopupViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -94,6 +104,7 @@
 			isa = PBXGroup;
 			children = (
 				49044E2B2630500F0061A719 /* MapViewModel.swift */,
+				4997199F26355587007D7BD3 /* PopupViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -103,8 +114,17 @@
 			children = (
 				49044E31263051FD0061A719 /* StartCoordinate.swift */,
 				49044E172630314B0061A719 /* APIKey.swift */,
+				499719A7263566E3007D7BD3 /* LocationDegrees.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		499719A2263555AD007D7BD3 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				499719A3263555D1007D7BD3 /* PopupViewModelType.swift */,
+			);
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 		66B43B84E2F3346F9CAAAA71 /* Pods */ = {
@@ -256,13 +276,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				499719932632FC79007D7BD3 /* PopupView.swift in Sources */,
 				49044E0726302F8F0061A719 /* MapViewController.swift in Sources */,
 				49044E2C2630500F0061A719 /* MapViewModel.swift in Sources */,
 				49044E0326302F8F0061A719 /* AppDelegate.swift in Sources */,
 				49044E182630314B0061A719 /* APIKey.swift in Sources */,
+				499719A4263555D1007D7BD3 /* PopupViewModelType.swift in Sources */,
 				49044E32263051FD0061A719 /* StartCoordinate.swift in Sources */,
 				49044E0526302F8F0061A719 /* SceneDelegate.swift in Sources */,
+				499719A8263566E3007D7BD3 /* LocationDegrees.swift in Sources */,
+				499719A026355587007D7BD3 /* PopupViewModel.swift in Sources */,
+				499719AB26357667007D7BD3 /* WeatherViewController.swift in Sources */,
+				499719B1263582D0007D7BD3 /* PopupViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
