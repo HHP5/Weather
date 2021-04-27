@@ -22,6 +22,12 @@ class MapViewController: UIViewController {
 		return map
 	}()
 	
+	private let popupView: PopupView = {
+		let view = PopupView(frame: UIScreen.main.bounds)
+		view.showWeatherButton.addTarget(self, action: #selector(showWeather), for: .touchUpInside)
+		return view
+	}()
+	
 	private let locationManager: CLLocationManager = {
 		let locationManager = CLLocationManager()
 		locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -54,6 +60,14 @@ class MapViewController: UIViewController {
 		
 	}
 	
+	// Не понимаю, как вынести эту функцию в файл с PopupView
+	@objc private func showWeather() {
+		let destinationVC = WeatherViewController()
+		destinationVC.modalPresentationStyle = .fullScreen
+		self.navigationController?.pushViewController(destinationVC, animated: true)
+		popupView.removeFromSuperview()
+	}
+	
 	private func setGestureRecognizer() {
 		let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
 		gestureRecognizer.delegate = self
@@ -84,12 +98,8 @@ class MapViewController: UIViewController {
 		currentLocation.lookUpLocationName { [self] name in
 			
 			let model = self.viewModel.cityNameAndCoordinateInPoint(location: currentLocation, city: name)
-			let popup = PopupViewController()
-			popup.viewModel = model
-//			popup.modalTransitionStyle = .coverVertical
-			popup.modalPresentationStyle = .overCurrentContext
-//			present(popup, animated: true, completion: nil)
-			self.navigationController?.pushViewController(popup, animated: true)
+			popupView.viewModel = model
+			view.addSubview(popupView)
 		}
 	}
 	
@@ -148,7 +158,6 @@ extension CLLocation {
 				return
 			}
 			if let location = placemarks?.first {
-				print(location)
 				handler(location)
 			}
 		}
@@ -220,11 +229,3 @@ extension MapViewController: UIGestureRecognizerDelegate {
 	
 }
 
-//extension MapViewController: PopupViewDelegate {
-//
-//	func showWeatherButtonPressed() {
-//		let destinationVC = WeatherViewController()
-//		print("cfffff")
-//		self.navigationController?.pushViewController(destinationVC, animated: true)
-//	}
-//}

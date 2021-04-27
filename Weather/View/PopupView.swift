@@ -1,13 +1,13 @@
 //
-//  PopupViewController.swift
+//  PopupView.swift
 //  Weather
 //
-//  Created by Екатерина Григорьева on 25.04.2021.
+//  Created by Екатерина Григорьева on 27.04.2021.
 //
 
 import UIKit
 
-class PopupViewController: UIViewController {
+class PopupView: UIView {
 	var viewModel: PopupViewModelType? {
 		willSet(viewModel) {
 			guard let viewModel = viewModel else { return }
@@ -45,7 +45,7 @@ class PopupViewController: UIViewController {
 		return stack
 	}()
 	
-	private let showWeatherButton: UIButton = {
+	let showWeatherButton: UIButton = {
 		let button = UIButton()
 		button.setTitle("Show Weather", for: .normal)
 		button.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .light)
@@ -57,33 +57,29 @@ class PopupViewController: UIViewController {
 		return button
 	}()
 	
-	private let closeButton: UIButton = {
+	let closeButton: UIButton = {
 		let button = UIButton()
+		button.frame.size = CGSize(width: 40, height: 40)
 		let image = UIImage(systemName: "xmark")
 		image?.withTintColor(.systemBlue)
+
+		button.imageView?.contentMode = .scaleToFill
 		button.setImage(image, for: .normal)
-		button.frame.size = CGSize(width: 15, height: 15)
+		button.addTarget(self, action: #selector(closePopup), for: .allEvents)
 		return button
 	}()
 	
 	@objc private func closePopup() {
-//		self.dismiss(animated: true, completion: nil)
-		self.navigationController?.popViewController(animated: true)
+		self.removeFromSuperview()
 	}
 	
-	@objc private func showWeather() {
-		let destinationVC = WeatherViewController()
-//		destinationVC.modalPresentationStyle = .fullScreen
-//		destinationVC.modalTransitionStyle = .flipHorizontal
-		print("ffffff")
-		self.navigationController?.pushViewController(destinationVC, animated: true)
-	}
-	
-	override func viewDidLoad() {
-		super.viewDidLoad()
+	override init(frame: CGRect) {
+		super.init(frame: frame)
 		setConstraints()
-		closeButton.addTarget(self, action: #selector(closePopup), for: .touchUpInside)
-		showWeatherButton.addTarget(self, action: #selector(showWeather), for: .touchUpInside)
+	}
+	
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
 	}
 	
 	private func setConstraints() {
@@ -94,14 +90,14 @@ class PopupViewController: UIViewController {
 		
 	}
 	
-	private func setContainer() {
-		view.addSubview(container)
+	func setContainer() {
+		self.addSubview(container)
 		
 		container.translatesAutoresizingMaskIntoConstraints = false
 		container.heightAnchor.constraint(equalToConstant: 170).isActive = true
-		container.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
-		container.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30).isActive = true
-		container.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30).isActive = true
+		container.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20).isActive = true
+		container.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 30).isActive = true
+		container.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -30).isActive = true
 	}
 	
 	private func setLabelStack() {
