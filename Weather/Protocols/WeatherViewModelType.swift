@@ -9,11 +9,16 @@ import Foundation
 import UIKit
 
 protocol WeatherViewModelType {
-	var city: String {get}
+	var city: String? {get}
+	
 	var temperature: String? {get}
+	
 	var humidity: String? {get}
+	
 	var wind: String? {get}
+	
 	var pressure: String? {get}
+	
 	var weatherDescription: String? {get}
 	
 	var mainWeatherImage: UIImage? {get}

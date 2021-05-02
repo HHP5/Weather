@@ -10,7 +10,7 @@ import MapKit
 import CoreLocation
 import SnapKit
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapViewDelegate {
 	private var viewModel: MapViewModelType
 	
 	 init(viewModel: MapViewModelType) {
@@ -22,6 +22,16 @@ class MapViewController: UIViewController {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
+	private var popupView: PopupView? {
+		willSet(popupView) {
+			
+			guard let popupView = popupView else { return }
+			popupView.showWeatherButton.addTarget(self, action: #selector(showWeather), for: .touchUpInside)
+			popupView.closeButton.addTarget(self, action: #selector(closePopup), for: .allEvents)
+
+		}
+	}
+	
 	private let mapView: MKMapView = {
 		let map = MKMapView()
 		map.isScrollEnabled = true
@@ -31,12 +41,6 @@ class MapViewController: UIViewController {
 		map.isPitchEnabled = true
 		map.centerCoordinate = CLLocationCoordinate2D(latitude: StartCoordinate.latitude, longitude: StartCoordinate.longitude)
 		return map
-	}()
-	
-	private let popupView: PopupView = {
-		let view = PopupView(frame: UIScreen.main.bounds)
-		view.showWeatherButton.addTarget(self, action: #selector(showWeather), for: .touchUpInside)
-		return view
 	}()
 	
 	private let locationManager: CLLocationManager = {
@@ -52,9 +56,8 @@ class MapViewController: UIViewController {
 		searchController.searchBar.placeholder = "Search for places"
 		return searchController
 	}()
-	var point: [MKPointAnnotation] = []
+	
 	var currentLocation: CLLocation = CLLocation()
-	var currentLocality: String = ""
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -70,16 +73,29 @@ class MapViewController: UIViewController {
 		
 		checkLocationAuthorization(status: locationManager.authorizationStatus)
 		locationManager.requestWhenInUseAuthorization()
-				
+		
 	}
-	// Не понимаю, как вынести эту функцию в файл с PopupView
+
 	@objc private func showWeather() {
 
-		guard let city = viewModel.weatherPoint(location: currentLocation, city: currentLocality ) else {return}
+		let city = viewModel.weatherPoint(location: currentLocation)
 		let destinationVC = WeatherViewController(viewModel: city)
 		destinationVC.modalPresentationStyle = .fullScreen
 		self.navigationController?.pushViewController(destinationVC, animated: true)
-		popupView.removeFromSuperview()
+		
+		popupView?.removeFromSuperview()
+		
+		if !mapView.annotations.isEmpty {
+			mapView.removeAnnotations(mapView.annotations)
+		}
+
+	}
+	
+	@objc private func closePopup() {
+		if !mapView.annotations.isEmpty {
+			mapView.removeAnnotations(mapView.annotations)
+		}
+		popupView?.removeFromSuperview()
 	}
 	
 	private func setGestureRecognizer() {
@@ -93,29 +109,21 @@ class MapViewController: UIViewController {
 		let location = gestureRecognizer.location(in: mapView)
 		let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
 		
-		let onePoint = MKPointAnnotation()
+		let point = MKPointAnnotation()
+		point.coordinate = coordinate
 		
-		if !point.isEmpty {
-			guard let oldPoint = point.first else {return}
-			mapView.removeAnnotation(oldPoint)
-			point = []
-		}
-		
-		onePoint.coordinate = coordinate
-		
-		let coordinateRegion = MKCoordinateRegion(center: onePoint.coordinate, latitudinalMeters: 1000000, longitudinalMeters: 1000000)
+		let coordinateRegion = MKCoordinateRegion(center: point.coordinate, latitudinalMeters: 1000000, longitudinalMeters: 1000000)
 		mapView.setRegion(coordinateRegion, animated: true)
-		mapView.addAnnotation(onePoint)
-		point.append(onePoint)
-		currentLocation = CLLocation(latitude: onePoint.coordinate.latitude, longitude: onePoint.coordinate.longitude)
+		mapView.addAnnotation(point)
+		currentLocation = CLLocation(latitude: point.coordinate.latitude, longitude: point.coordinate.longitude)
 		
-		currentLocation.lookUpLocationName { [self] name in
-			currentLocality = name
-			let model = viewModel.coordinateInPoint(location: currentLocation, city: name)
-			popupView.viewModel = model
-			view.addSubview(popupView)
+		let model = viewModel.coordinateInPoint(location: currentLocation)
+		self.popupView = PopupView(viewModel: model)
+
+		if let popup = popupView {
+				view.addSubview(popup)
 		}
-		
+
 	}
 	
 	private func setNavBar() {
@@ -133,52 +141,6 @@ class MapViewController: UIViewController {
 		}	
 	}
 	
-	func showAlertLocation(title: String, messsage: String, url: URL?) {
-		let alert = UIAlertController(title: title, message: messsage, preferredStyle: .alert)
-		
-		let action = UIAlertAction(title: "Настройки", style: .default) { _ in
-			if let url = url {
-				UIApplication.shared.open(url, options: [:], completionHandler: nil)
-			}
-		}
-		let cancel = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
-		alert.addAction(action)
-		alert.addAction(cancel)
-		present(alert, animated: true, completion: nil)
-	}
-	
-}
-extension CLLocation {
-	
-	func lookUpLocationName(_ handler: @escaping (String) -> Void) {
-		
-		lookUpPlaceMark { placemark in
-			if let locality = placemark?.locality {
-				
-				handler(locality)
-			}
-		}
-	}
-	
-	func lookUpPlaceMark(_ handler: @escaping (CLPlacemark?) -> Void) {
-		
-		let geocoder = CLGeocoder()
-		
-		// Look up the location and pass it to the completion handler
-		geocoder.reverseGeocodeLocation(self) { placemarks, error in
-			
-			guard error == nil else {
-				
-				handler(nil)
-				return
-			}
-			
-			if let location = placemarks?.first {
-				
-				handler(location)
-			}
-		}
-	}
 }
 
 extension MapViewController: CLLocationManagerDelegate {
@@ -188,9 +150,10 @@ extension MapViewController: CLLocationManagerDelegate {
 		case .authorizedWhenInUse:
 			break
 		case .denied:
-			showAlertLocation(title: "Вы запретили использование местоположения",
-							  messsage: "Измените это в настройках",
-							  url: URL(string: UIApplication.openSettingsURLString))
+			let alert = AlertService.alert(title: "Вы запретили использование местоположения",
+										   message: "Измените это в настройках",
+										   url: URL(string: UIApplication.openSettingsURLString))
+			self.present(alert, animated: true)
 		case .notDetermined:
 			locationManager.requestWhenInUseAuthorization()
 		case .restricted:
@@ -222,6 +185,8 @@ extension MapViewController: CLLocationManagerDelegate {
 	}
 	
 	func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+		let alert = AlertService.alert(message: error.localizedDescription)
+		present(alert, animated: true)
 	}
 	
 }
@@ -234,13 +199,4 @@ extension MapViewController: UISearchControllerDelegate {
 	func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
 		
 	}
-	
-}
-
-extension MapViewController: MKMapViewDelegate {
-	
-}
-
-extension MapViewController: UIGestureRecognizerDelegate {
-	
 }

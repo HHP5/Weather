@@ -48,44 +48,30 @@ class WeatherViewController: UIViewController {
 
 		viewModel.didFinishRequest = { [weak self] in
 			self?.view()?.stopActivityIndicator()
-			self?.view()?.setConstraints()
 		}
 
 		viewModel.didUpdateData = { [weak self]  in
+			self?.view()?.setConstraints()
+
 			self?.updatePage()
 		}
 
-//		viewModel.didReceiveError = { [weak self] error in
-//
-//			let alert = AlertService.alert(message: error.localizedDescription)
-//			self?.present(alert, animated: true)
-//
-//			return
-//		}
+		viewModel.didReceiveError = { [weak self] error in
+		
+			let alert = AlertService.alert(message: error.localizedDescription)
+			self?.present(alert, animated: true)
+		}
 	}
 	
 	private func updatePage() {
-		view()?.cityName.text = viewModel.city
+		view()?.locality.text = viewModel.city
 		view()?.weatherDescriprion.text = viewModel.weatherDescription
 		view()?.temperature.text = viewModel.temperature
 		view()?.pressureValue.text = viewModel.pressure
 		view()?.humidityValue.text = viewModel.humidity
 		view()?.windValue.text = viewModel.wind
-				
 		view()?.mainWeatherImage.image = viewModel.mainWeatherImage
-//		view()?.mainWeatherImage.image = UIImage(named: "mask")
-
-//		let maskView = UIImageView()
-//		maskView.image = viewModel.mainWeatherImage
-//		maskView.frame = (view()?.mainWeatherImage.bounds)!
-//		view()?.mainWeatherImage.layer.masksToBounds = true
-//		view()?.mainWeatherImage.clipsToBounds = true
-//
-//		view()?.mainWeatherImage.mask = maskView
-		
-		if let image = viewModel.imageWeather {
-			view()?.weatherIcon.kf.setImage(with: image)
-		}
+		view()?.weatherIcon.kf.setImage(with: viewModel.imageWeather)
 	}
 	
 	private func setNavBar() {

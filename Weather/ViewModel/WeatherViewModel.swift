@@ -7,9 +7,12 @@
 
 import Foundation
 import UIKit
+import MapKit
 
 class WeatherViewModel: WeatherViewModelType {
 	private var serviceLayer = ServiceLayer()
+	
+	var location: CLLocation
 	
 	var didFinishRequest: (() -> Void)?
 	
@@ -17,11 +20,11 @@ class WeatherViewModel: WeatherViewModelType {
 	
 	var didReceiveError: ((Error) -> Void)?
 
-	init(city: String) {
-		self.city = city
+	init(location: CLLocation) {
+		self.location = location
 	}
 	
-	var city: String
+	var city: String?
 	
 	var temperature: String?
 	
@@ -38,23 +41,28 @@ class WeatherViewModel: WeatherViewModelType {
 	var mainWeatherImage: UIImage?
 	
 	func fetcingWeather() {
-				
-		serviceLayer.request(router: Router.weather(city: city)) { [weak self] (result: Result<WeatherResponse, Error>) in
+		
+		location.lookUpLocationName { [weak self] city in
 			
-			DispatchQueue.main.async { self?.didFinishRequest?() }
-			
-			switch result {
-
-			case .success(let result):
+			self?.city = city
+						
+			self?.serviceLayer.request(router: Router.weather(city: city)) { [weak self] (result: Result<WeatherResponse, Error>) in
 				
-				self?.handleResult(result)
-
-				DispatchQueue.main.async { self?.didUpdateData?() }
-
-			case .failure(let error):
-
-				DispatchQueue.main.async { self?.didReceiveError?(error) }
+				DispatchQueue.main.async { self?.didFinishRequest?() }
 				
+				switch result {
+
+				case .success(let result):
+					
+					self?.handleResult(result)
+
+					DispatchQueue.main.async { self?.didUpdateData?() }
+
+				case .failure(let error):
+
+					DispatchQueue.main.async { self?.didReceiveError?(error) }
+					
+				}
 			}
 		}
 	}
@@ -75,7 +83,7 @@ class WeatherViewModel: WeatherViewModelType {
 		
 		self.handleHumidity(result.main.humidity)
 	}
-	
+		
 	private func handleHumidity(_ humidity: Double) {
 		self.humidity = String(Int(humidity)) + " %"
 	}

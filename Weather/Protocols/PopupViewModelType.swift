@@ -8,8 +8,8 @@
 import Foundation
 
 protocol PopupViewModelType {
-	var cityName: String {get}
-	var latitude: String {get}
-	var longitude: String {get}
-	
+	var locality: String? {get}
+	var coordinate: String {get}
+	func getCityNameAndCoordinate()
+	var didFindLocality: ((Bool) -> Void)? {get set}
 }

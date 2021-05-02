@@ -9,16 +9,52 @@ import UIKit
 import SnapKit
 
 class PopupView: UIView {
-	var viewModel: PopupViewModelType? {
-		willSet(viewModel) {
-			guard let viewModel = viewModel else { return }
-			
-			nameLabel.text = viewModel.cityName
-			coordinateLabel.text = "\(viewModel.latitude)   \(viewModel.longitude)"
-		}
+	var viewModel: PopupViewModelType
+
+	required init(viewModel: PopupViewModelType) {
+		print("POPUP")
+		self.viewModel = viewModel
+		
+		super.init(frame: UIScreen.main.bounds)
+						
+		viewModel.getCityNameAndCoordinate()
+		self.bindToViewModel()
+		
 	}
 	
-	private let nameLabel: UILabel = {
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+
+	private func bindToViewModel() {
+		print("hae")
+		viewModel.didFindLocality = { [weak self] condition in
+			print("dvefg")
+
+			print(condition)
+			
+			switch condition {
+			case true:
+				print("yes")
+				self?.updatePage()
+				self?.setConstraints()
+			default:
+				print("fevvbvbgfgerfrv")
+//				self?.removeFromSuperview()
+			}
+			
+		}
+		print("gfmgjjg")
+		self.removeFromSuperview()
+
+	}
+	
+	private func updatePage() {
+		localityLabel.text = viewModel.locality
+		coordinateLabel.text = viewModel.coordinate
+	}
+	 
+	private let localityLabel: UILabel = {
 		let label = UILabel()
 		label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
 		return label
@@ -40,7 +76,7 @@ class PopupView: UIView {
 	}()
 	
 	private lazy var labelStack: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [nameLabel, coordinateLabel])
+		let stack = UIStackView(arrangedSubviews: [localityLabel, coordinateLabel])
 		stack.axis = .vertical
 		stack.spacing = 10
 		return stack
@@ -66,22 +102,8 @@ class PopupView: UIView {
 
 		button.imageView?.contentMode = .scaleToFill
 		button.setImage(image, for: .normal)
-		button.addTarget(self, action: #selector(closePopup), for: .allEvents)
 		return button
 	}()
-	
-	@objc private func closePopup() {
-		self.removeFromSuperview()
-	}
-	
-	override init(frame: CGRect) {
-		super.init(frame: frame)
-		setConstraints()
-	}
-	
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
 	
 	private func setConstraints() {
 		setContainer()

@@ -9,23 +9,39 @@ import Foundation
 import MapKit
 
 class PopupViewModel: PopupViewModelType {
+	var coordinate: String {
+		return "\(latitude)   \(longitude)"
+	}
+	
 	var location: CLLocation
 
-	var cityName: String
+	var locality: String?
 	
-	var latitude: String {
+	private var latitude: String {
 		let lat = location.coordinate.latitude
 		return convertDDintoDMS(location: lat, .latitude)
 	}
 	
-	var longitude: String {
+	private var longitude: String {
 		let lon = location.coordinate.longitude
 		return convertDDintoDMS(location: lon, .longitude)
 	}
-	
-	init(location: CLLocation, cityName: String) {
-		self.cityName = cityName
+	var didFindLocality: ((Bool) -> Void)?
+
+	init(location: CLLocation) {
 		self.location = location
+		self.didFindLocality?(false)
+
+	}
+
+	func getCityNameAndCoordinate() {
+		
+		location.lookUpLocationName { name in
+			
+			self.locality = name
+			self.didFindLocality?(true)
+		}
+		
 	}
 	
 	private func convertDDintoDMS(location: CLLocationDegrees, _ locationDegrees: LocationDegrees) -> String {

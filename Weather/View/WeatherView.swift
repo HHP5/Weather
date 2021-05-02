@@ -12,7 +12,7 @@ class WeatherView: UIView {
 	
 	let contentView = UIView()
 	
-	let cityName: UILabel = {
+	let locality: UILabel = {
 		let label = UILabel()
 		label.font = UIFont(name: FontStyle.sfProDisplay.rawValue, size: 34)
 		return label
@@ -76,7 +76,7 @@ class WeatherView: UIView {
 	}()
 	
 	private lazy var mainParametersAndCityNameStack: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [cityName, mainParametersStack])
+		let stack = UIStackView(arrangedSubviews: [locality, mainParametersStack])
 		stack.axis = .vertical
 		stack.distribution = .equalSpacing
 		stack.spacing = 30
@@ -167,18 +167,7 @@ class WeatherView: UIView {
 	let mainWeatherImage: UIImageView = {
 		let imageView = UIImageView()
 		imageView.contentMode = .scaleAspectFill
-
-//		imageView.layer.masksToBounds = true
-//		imageView.clipsToBounds = true
-
-//		let maskView = UIImageView()
-//		maskView.image = UIImage(named: "mask")
-//		maskView.frame = imageView.bounds
-//		imageView.mask = maskView
-//
-//		imageView.addSubview(maskView)
 		return imageView
-//		return maskView
 	}()
 	
 	private lazy var stack: UIStackView = {
@@ -227,11 +216,7 @@ class WeatherView: UIView {
 	private func setImageView() {
 		
 		self.addSubview(mainWeatherImage)
-		
-//		mainWeatherImage.snp.makeConstraints { make in
-//			make.bottom.right.equalToSuperview()
-//			make.height.equalTo(self.frame.height).multipliedBy(0.2)
-//		}
+
 		mainWeatherImage.snp.makeConstraints { $0.bottom.right.equalToSuperview() }
 		
 	}

@@ -8,12 +8,9 @@
 import Foundation
 import MapKit
 
-protocol MapViewModelType {
-	var city: String? {get}
+protocol MapViewModelType {	
+	func coordinateInPoint(location: CLLocation) -> PopupViewModelType
 	
-	func coordinateInPoint(location: CLLocation, city: String) -> PopupViewModelType?
+	func weatherPoint(location: CLLocation) -> WeatherViewModel
 	
-	func weatherPoint(location: CLLocation, city: String) -> WeatherViewModel?
-	
-	func lookUpName(location: CLLocation) 
 }
