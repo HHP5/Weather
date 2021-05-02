@@ -8,9 +8,20 @@
 import UIKit
 import MapKit
 import CoreLocation
+import SnapKit
 
 class MapViewController: UIViewController {
-	private var viewModel = MapViewModel()
+	private var viewModel: MapViewModelType
+	
+	 init(viewModel: MapViewModelType) {
+		self.viewModel = viewModel
+		super.init(nibName: nil, bundle: nil)
+	}
+	
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
 	private let mapView: MKMapView = {
 		let map = MKMapView()
 		map.isScrollEnabled = true
@@ -31,7 +42,7 @@ class MapViewController: UIViewController {
 	private let locationManager: CLLocationManager = {
 		let locationManager = CLLocationManager()
 		locationManager.desiredAccuracy = kCLLocationAccuracyBest
-		//		locationManager.distanceFilter = 10
+		locationManager.distanceFilter = 10
 		return locationManager
 	}()
 	
@@ -42,11 +53,13 @@ class MapViewController: UIViewController {
 		return searchController
 	}()
 	var point: [MKPointAnnotation] = []
+	var currentLocation: CLLocation = CLLocation()
+	var currentLocality: String = ""
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = .white
-		
+
 		searchController.delegate = self
 		locationManager.delegate = self
 		mapView.delegate = self
@@ -57,12 +70,13 @@ class MapViewController: UIViewController {
 		
 		checkLocationAuthorization(status: locationManager.authorizationStatus)
 		locationManager.requestWhenInUseAuthorization()
-		
+				
 	}
-	
 	// Не понимаю, как вынести эту функцию в файл с PopupView
 	@objc private func showWeather() {
-		let destinationVC = WeatherViewController()
+
+		guard let city = viewModel.weatherPoint(location: currentLocation, city: currentLocality ) else {return}
+		let destinationVC = WeatherViewController(viewModel: city)
 		destinationVC.modalPresentationStyle = .fullScreen
 		self.navigationController?.pushViewController(destinationVC, animated: true)
 		popupView.removeFromSuperview()
@@ -93,14 +107,15 @@ class MapViewController: UIViewController {
 		mapView.setRegion(coordinateRegion, animated: true)
 		mapView.addAnnotation(onePoint)
 		point.append(onePoint)
-		let currentLocation = CLLocation(latitude: onePoint.coordinate.latitude, longitude: onePoint.coordinate.longitude)
+		currentLocation = CLLocation(latitude: onePoint.coordinate.latitude, longitude: onePoint.coordinate.longitude)
 		
 		currentLocation.lookUpLocationName { [self] name in
-			
-			let model = self.viewModel.cityNameAndCoordinateInPoint(location: currentLocation, city: name)
+			currentLocality = name
+			let model = viewModel.coordinateInPoint(location: currentLocation, city: name)
 			popupView.viewModel = model
 			view.addSubview(popupView)
 		}
+		
 	}
 	
 	private func setNavBar() {
@@ -110,12 +125,12 @@ class MapViewController: UIViewController {
 	
 	private func setMapView() {
 		view.addSubview(mapView)
-		mapView.translatesAutoresizingMaskIntoConstraints = false
-		mapView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-		mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-		mapView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
-		mapView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
 		
+		mapView.snp.makeConstraints { make in
+			make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+			make.bottom.equalToSuperview()
+			make.left.right.equalToSuperview()
+		}	
 	}
 	
 	func showAlertLocation(title: String, messsage: String, url: URL?) {
@@ -157,12 +172,15 @@ extension CLLocation {
 				handler(nil)
 				return
 			}
+			
 			if let location = placemarks?.first {
+				
 				handler(location)
 			}
 		}
 	}
 }
+
 extension MapViewController: CLLocationManagerDelegate {
 	
 	func checkLocationAuthorization(status: CLAuthorizationStatus) {
@@ -204,15 +222,13 @@ extension MapViewController: CLLocationManagerDelegate {
 	}
 	
 	func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-		print(error)
 	}
 	
 }
 
 extension MapViewController: UISearchControllerDelegate {
 	func updateSearchResults(for searchController: UISearchController) {
-		guard let text = searchController.searchBar.text else { return }
-		print(text)
+//		guard let text = searchController.searchBar.text else { return }
 	}
 	
 	func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
@@ -228,4 +244,3 @@ extension MapViewController: MKMapViewDelegate {
 extension MapViewController: UIGestureRecognizerDelegate {
 	
 }
-

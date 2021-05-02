@@ -6,53 +6,86 @@
 //
 
 import UIKit
+import Kingfisher
 
 class WeatherViewController: UIViewController {
-	private let cityName: UILabel = {
-		let label = UILabel()
-		label.font = UIFont.systemFont(ofSize: 40, weight: .bold)
-		label.text = "Milan"
-		return label
-	}()
-	
-	private let temperature: UILabel = {
-		let label = UILabel()
-		label.font = UIFont.systemFont(ofSize: 110, weight: .bold)
-		label.text = "23"
-		label.textColor = #colorLiteral(red: 0.1262762547, green: 0.1255328953, blue: 0.1268522739, alpha: 1)
-		return label
-	}()
-	
-	private let celsiusLabel: UILabel = {
-		let label = UILabel()
-		label.font = UIFont.systemFont(ofSize: 40, weight: .regular)
-		label.text = "\u{00B0}C"
-		label.textColor = .darkGray
-		return label
-	}()
-	
-    override func viewDidLoad() {
-        super.viewDidLoad()
+	private var viewModel: WeatherViewModelType
 
+	init(viewModel: WeatherViewModelType) {
+		
+		self.viewModel = viewModel
+		super.init(nibName: nil, bundle: nil)
+		
+		viewModel.fetcingWeather()
+		self.bindToViewModel()
+		
+	}
+	
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+
+	override func loadView() {
+		self.view = WeatherView()
+
+	}
+	
+	func view() -> WeatherView? {
+	   return self.view as? WeatherView
+	}
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		
 		view.backgroundColor = .white
 		setNavBar()
-		setConstraints()
-		drawArc()
-    }
+		
+		view()?.startActivityIndicator()
+
+	}
+
+	private func bindToViewModel() {
+
+		viewModel.didFinishRequest = { [weak self] in
+			self?.view()?.stopActivityIndicator()
+			self?.view()?.setConstraints()
+		}
+
+		viewModel.didUpdateData = { [weak self]  in
+			self?.updatePage()
+		}
+
+//		viewModel.didReceiveError = { [weak self] error in
+//
+//			let alert = AlertService.alert(message: error.localizedDescription)
+//			self?.present(alert, animated: true)
+//
+//			return
+//		}
+	}
 	
-	private func drawArc() {
+	private func updatePage() {
+		view()?.cityName.text = viewModel.city
+		view()?.weatherDescriprion.text = viewModel.weatherDescription
+		view()?.temperature.text = viewModel.temperature
+		view()?.pressureValue.text = viewModel.pressure
+		view()?.humidityValue.text = viewModel.humidity
+		view()?.windValue.text = viewModel.wind
+				
+		view()?.mainWeatherImage.image = viewModel.mainWeatherImage
+//		view()?.mainWeatherImage.image = UIImage(named: "mask")
+
+//		let maskView = UIImageView()
+//		maskView.image = viewModel.mainWeatherImage
+//		maskView.frame = (view()?.mainWeatherImage.bounds)!
+//		view()?.mainWeatherImage.layer.masksToBounds = true
+//		view()?.mainWeatherImage.clipsToBounds = true
+//
+//		view()?.mainWeatherImage.mask = maskView
 		
-		let path = UIBezierPath(arcCenter: CGPoint(x: view.frame.width * 1.5, y: view.frame.height * 0.8),
-								radius: view.frame.width * 1.1,
-								startAngle: 60,
-								endAngle: .pi,
-								clockwise: false)
-		
-		let shapeLayer = CAShapeLayer()
-		shapeLayer.path = path.cgPath
-		shapeLayer.fillColor = UIColor.orange.cgColor
-		
-		view.layer.addSublayer(shapeLayer)
+		if let image = viewModel.imageWeather {
+			view()?.weatherIcon.kf.setImage(with: image)
+		}
 	}
 	
 	private func setNavBar() {
@@ -60,52 +93,5 @@ class WeatherViewController: UIViewController {
 		navigationController?.navigationBar.barStyle = .black
 		navigationController?.navigationBar.barTintColor = .white
 	}
-	
-	private func setConstraints() {
-			
-//		setColor()
-		
-		setCityNameLabel()
-		setTemperatureLabel()
-		
-	}
-	func setColor() {
-		cityName.backgroundColor = .systemGray3
-		temperature.backgroundColor = .lightGray
 
-	}
-	
-	private func setCityNameLabel() {
-
-		view.addSubview(cityName)
-		
-		cityName.translatesAutoresizingMaskIntoConstraints = false
-		cityName.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
-		cityName.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 25).isActive = true
-		cityName.invalidateIntrinsicContentSize()
-	}
-	
-	private func setTemperatureLabel() {
-
-		view.addSubview(temperature)
-		
-		temperature.translatesAutoresizingMaskIntoConstraints = false
-		temperature.topAnchor.constraint(equalTo: cityName.bottomAnchor, constant: 50).isActive = true
-		temperature.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 25).isActive = true
-		temperature.invalidateIntrinsicContentSize()
-		
-		setCelsiusLabel()
-	}
-	
-	private func setCelsiusLabel() {
-		view.addSubview(celsiusLabel)
-		
-//		celsiusLabel.backgroundColor = .yellow
-		
-		celsiusLabel.translatesAutoresizingMaskIntoConstraints = false
-		celsiusLabel.topAnchor.constraint(equalTo: temperature.topAnchor, constant: 22).isActive = true
-		celsiusLabel.leftAnchor.constraint(equalTo: temperature.rightAnchor).isActive = true
-		celsiusLabel.invalidateIntrinsicContentSize()
-	}
-	
 }

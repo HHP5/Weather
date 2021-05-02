@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class PopupView: UIView {
 	var viewModel: PopupViewModelType? {
@@ -87,43 +88,47 @@ class PopupView: UIView {
 		setLabelStack()
 		setShowWeatherButton()
 		setCloseButton()
-		
 	}
 	
 	func setContainer() {
 		self.addSubview(container)
 		
-		container.translatesAutoresizingMaskIntoConstraints = false
-		container.heightAnchor.constraint(equalToConstant: 170).isActive = true
-		container.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20).isActive = true
-		container.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 30).isActive = true
-		container.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -30).isActive = true
+		container.snp.makeConstraints { make in
+			make.height.equalTo(170)
+			make.bottom.equalToSuperview().offset(-20)
+			make.left.equalToSuperview().offset(30)
+			make.right.equalToSuperview().offset(-30)
+		}
 	}
 	
 	private func setLabelStack() {
 		container.addSubview(labelStack)
 		
-		labelStack.translatesAutoresizingMaskIntoConstraints = false
-		labelStack.topAnchor.constraint(equalTo: container.topAnchor, constant: 20).isActive = true
-		labelStack.leftAnchor.constraint(equalTo: container.leftAnchor, constant: 20).isActive = true
-		labelStack.rightAnchor.constraint(equalTo: container.rightAnchor, constant: -20).isActive = true
+		labelStack.snp.makeConstraints { make in
+			make.top.equalTo(container.snp.top).offset(20)
+			make.left.equalTo(container.snp.left).offset(20)
+			make.right.equalTo(container.snp.right).offset(-20)
+		}
 	}
 	
 	private func setShowWeatherButton() {
 		container.addSubview(showWeatherButton)
 		
-		showWeatherButton.translatesAutoresizingMaskIntoConstraints = false
-		showWeatherButton.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -15).isActive = true
-		showWeatherButton.leftAnchor.constraint(equalTo: container.leftAnchor, constant: 15).isActive = true
-		showWeatherButton.rightAnchor.constraint(equalTo: container.rightAnchor, constant: -15).isActive = true
-		showWeatherButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		showWeatherButton.snp.makeConstraints { make in
+			make.bottom.equalTo(container.snp.bottom).offset(-15)
+			make.left.equalTo(container.snp.left).offset(15)
+			make.right.equalTo(container.snp.right).offset(-15)
+			make.height.equalTo(40)
+		}
 	}
 	
 	private func setCloseButton() {
 		container.addSubview(closeButton)
-		closeButton.translatesAutoresizingMaskIntoConstraints = false
-		closeButton.topAnchor.constraint(equalTo: labelStack.topAnchor).isActive = true
-		closeButton.rightAnchor.constraint(equalTo: showWeatherButton.rightAnchor).isActive = true
+		
+		closeButton.snp.makeConstraints { make in
+			make.right.equalTo(showWeatherButton.snp.right)
+			make.top.equalTo(labelStack.snp.top)
+		}
 	}
 	
 }

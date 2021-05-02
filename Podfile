@@ -8,5 +8,5 @@ target 'Weather' do
   # Pods for Weather
   pod 'Kingfisher', '~> 6.0'
   pod 'SwiftLint'
-
+  pod 'SnapKit', '~> 5.0.0'
 end
