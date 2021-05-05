@@ -12,10 +12,11 @@ class WeatherViewController: UIViewController {
 	private var viewModel: WeatherViewModelType
 
 	init(viewModel: WeatherViewModelType) {
-		
+
 		self.viewModel = viewModel
-		super.init(nibName: nil, bundle: nil)
 		
+		super.init(nibName: nil, bundle: nil)
+
 		viewModel.fetcingWeather()
 		self.bindToViewModel()
 		

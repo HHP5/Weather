@@ -20,30 +20,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 		window?.makeKeyAndVisible()
 		let mapViewController = MapViewController(viewModel: MapViewModel())
-
+		
 		let navBar = UINavigationController(rootViewController: mapViewController)
 		window?.rootViewController = navBar
 		
 	}
-
-	func sceneDidDisconnect(_ scene: UIScene) {
-
-	}
-
-	func sceneDidBecomeActive(_ scene: UIScene) {
-
-	}
-
-	func sceneWillResignActive(_ scene: UIScene) {
-
-	}
-
-	func sceneWillEnterForeground(_ scene: UIScene) {
-
-	}
-
-	func sceneDidEnterBackground(_ scene: UIScene) {
-	
-	}
-
 }

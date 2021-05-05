@@ -12,7 +12,6 @@ class PopupView: UIView {
 	var viewModel: PopupViewModelType
 
 	required init(viewModel: PopupViewModelType) {
-		print("POPUP")
 		self.viewModel = viewModel
 		
 		super.init(frame: UIScreen.main.bounds)
@@ -27,26 +26,10 @@ class PopupView: UIView {
 	}
 
 	private func bindToViewModel() {
-		print("hae")
-		viewModel.didFindLocality = { [weak self] condition in
-			print("dvefg")
-
-			print(condition)
-			
-			switch condition {
-			case true:
-				print("yes")
-				self?.updatePage()
-				self?.setConstraints()
-			default:
-				print("fevvbvbgfgerfrv")
-//				self?.removeFromSuperview()
-			}
-			
+		viewModel.didFindLocality = { [weak self] in
+			self?.updatePage()
+			self?.setConstraints()
 		}
-		print("gfmgjjg")
-		self.removeFromSuperview()
-
 	}
 	
 	private func updatePage() {

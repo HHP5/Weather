@@ -36,6 +36,7 @@
 		499719A4263555D1007D7BD3 /* PopupViewModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499719A3263555D1007D7BD3 /* PopupViewModelType.swift */; };
 		499719A8263566E3007D7BD3 /* LocationDegrees.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499719A7263566E3007D7BD3 /* LocationDegrees.swift */; };
 		499719AB26357667007D7BD3 /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499719AA26357667007D7BD3 /* WeatherViewController.swift */; };
+		49AA7AC52641515A00D7F99E /* CLLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AA7AC42641515A00D7F99E /* CLLocationManager.swift */; };
 		49BFDCE92639A3E200B0B78A /* WeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49BFDCE82639A3E200B0B78A /* WeatherView.swift */; };
 		49BFDCED263A919500B0B78A /* SFProDisplaySemibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 49BFDCEC263A919500B0B78A /* SFProDisplaySemibold.ttf */; };
 		49BFDCF0263A929400B0B78A /* FontStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49BFDCEF263A929400B0B78A /* FontStyle.swift */; };
@@ -75,6 +76,7 @@
 		499719A3263555D1007D7BD3 /* PopupViewModelType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupViewModelType.swift; sourceTree = "<group>"; };
 		499719A7263566E3007D7BD3 /* LocationDegrees.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDegrees.swift; sourceTree = "<group>"; };
 		499719AA26357667007D7BD3 /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
+		49AA7AC42641515A00D7F99E /* CLLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLLocationManager.swift; sourceTree = "<group>"; };
 		49BFDCE82639A3E200B0B78A /* WeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherView.swift; sourceTree = "<group>"; };
 		49BFDCEC263A919500B0B78A /* SFProDisplaySemibold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SFProDisplaySemibold.ttf; sourceTree = "<group>"; };
 		49BFDCEF263A929400B0B78A /* FontStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontStyle.swift; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 			children = (
 				49044E172630314B0061A719 /* APIKey.swift */,
 				491E9E84263EDF21009AB46E /* CLLocation.swift */,
+				49AA7AC42641515A00D7F99E /* CLLocationManager.swift */,
 				49044E31263051FD0061A719 /* StartCoordinate.swift */,
 				499719A7263566E3007D7BD3 /* LocationDegrees.swift */,
 				491E9E6F263EA3D4009AB46E /* AlerService.swift */,
@@ -357,6 +360,7 @@
 			files = (
 				49044E0726302F8F0061A719 /* MapViewController.swift in Sources */,
 				498758462639646600FBC3F3 /* NetworkError.swift in Sources */,
+				49AA7AC52641515A00D7F99E /* CLLocationManager.swift in Sources */,
 				491E9E73263ED7E5009AB46E /* WeatherIcon.swift in Sources */,
 				491E9E85263EDF21009AB46E /* CLLocation.swift in Sources */,
 				4987583C263960F100FBC3F3 /* WeatherViewModel.swift in Sources */,

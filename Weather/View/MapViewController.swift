@@ -10,10 +10,10 @@ import MapKit
 import CoreLocation
 import SnapKit
 
-class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapViewDelegate {
+class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapViewDelegate, UISearchControllerDelegate {
 	private var viewModel: MapViewModelType
 	
-	 init(viewModel: MapViewModelType) {
+	init(viewModel: MapViewModelType) {
 		self.viewModel = viewModel
 		super.init(nibName: nil, bundle: nil)
 	}
@@ -28,7 +28,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 			guard let popupView = popupView else { return }
 			popupView.showWeatherButton.addTarget(self, action: #selector(showWeather), for: .touchUpInside)
 			popupView.closeButton.addTarget(self, action: #selector(closePopup), for: .allEvents)
-
+			
 		}
 	}
 	
@@ -54,6 +54,8 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		let searchController = UISearchController(searchResultsController: nil)
 		searchController.obscuresBackgroundDuringPresentation = false
 		searchController.searchBar.placeholder = "Search for places"
+		searchController.searchBar.backgroundColor = .clear
+		searchController.searchBar.tintColor = .black
 		return searchController
 	}()
 	
@@ -62,10 +64,11 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = .white
-
+		
 		searchController.delegate = self
 		locationManager.delegate = self
 		mapView.delegate = self
+		searchController.searchBar.delegate = self
 		
 		setNavBar()
 		setMapView()
@@ -77,7 +80,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	}
 
 	@objc private func showWeather() {
-
+		
 		let city = viewModel.weatherPoint(location: currentLocation)
 		let destinationVC = WeatherViewController(viewModel: city)
 		destinationVC.modalPresentationStyle = .fullScreen
@@ -88,7 +91,9 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		if !mapView.annotations.isEmpty {
 			mapView.removeAnnotations(mapView.annotations)
 		}
-
+		
+		searchController.isActive = false
+		
 	}
 	
 	@objc private func closePopup() {
@@ -109,21 +114,27 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		let location = gestureRecognizer.location(in: mapView)
 		let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
 		
+		self.makePoint(in: coordinate)
+		self.locationManager(locationManager, didUpdateLocations: coordinate)
+	}
+	
+	private func makePoint(in coordinate: CLLocationCoordinate2D) {
 		let point = MKPointAnnotation()
 		point.coordinate = coordinate
 		
-		let coordinateRegion = MKCoordinateRegion(center: point.coordinate, latitudinalMeters: 1000000, longitudinalMeters: 1000000)
-		mapView.setRegion(coordinateRegion, animated: true)
 		mapView.addAnnotation(point)
 		currentLocation = CLLocation(latitude: point.coordinate.latitude, longitude: point.coordinate.longitude)
 		
-		let model = viewModel.coordinateInPoint(location: currentLocation)
-		self.popupView = PopupView(viewModel: model)
-
-		if let popup = popupView {
-				view.addSubview(popup)
+		addPopup()
+	}
+	
+	private func addPopup() {
+		viewModel.coordinateInPoint(location: currentLocation) { [weak self] model in
+			self?.popupView = PopupView(viewModel: model)
+			
+			guard let popupView = self?.popupView else {return}
+			self?.view.addSubview(popupView)
 		}
-
 	}
 	
 	private func setNavBar() {
@@ -170,14 +181,11 @@ extension MapViewController: CLLocationManagerDelegate {
 	}
 	
 	//	 Zoom to current location
-	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-		if let location = locations.first {
-			
-			let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-			let region = MKCoordinateRegion(center: location.coordinate, span: span)
-			mapView.setRegion(region, animated: true)
-			
-		}
+	func locationManager(_ manager: CLLocationManager, didUpdateLocations coordinate: CLLocationCoordinate2D) {
+		
+		let coordinateRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: 1000000, longitudinalMeters: 1000000)
+		mapView.setRegion(coordinateRegion, animated: true)
+		
 	}
 	
 	func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
@@ -191,12 +199,25 @@ extension MapViewController: CLLocationManagerDelegate {
 	
 }
 
-extension MapViewController: UISearchControllerDelegate {
-	func updateSearchResults(for searchController: UISearchController) {
-//		guard let text = searchController.searchBar.text else { return }
+extension MapViewController: UISearchBarDelegate {
+	
+	func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+		self.closePopup()
+		self.searchController.searchBar.endEditing(true)
+		guard let text = searchController.searchBar.text else { return }
+		
+		viewModel.searchBarSearchButtonClicked(for: text) { [weak self] coordinate in
+			
+			guard let self = self else {return}
+			
+			self.locationManager(self.locationManager, didUpdateLocations: coordinate)
+			
+			DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+				self.makePoint(in: coordinate)
+				self.searchController.dismiss(animated: true, completion: nil)
+			}
+			
+		}
 	}
 	
-	func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-		
-	}
 }

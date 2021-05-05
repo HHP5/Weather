@@ -13,7 +13,7 @@ class PopupViewModel: PopupViewModelType {
 		return "\(latitude)   \(longitude)"
 	}
 	
-	var location: CLLocation
+	private var location: CLLocation
 
 	var locality: String?
 	
@@ -26,11 +26,10 @@ class PopupViewModel: PopupViewModelType {
 		let lon = location.coordinate.longitude
 		return convertDDintoDMS(location: lon, .longitude)
 	}
-	var didFindLocality: ((Bool) -> Void)?
+	var didFindLocality: (() -> Void)?
 
 	init(location: CLLocation) {
 		self.location = location
-		self.didFindLocality?(false)
 
 	}
 
@@ -39,7 +38,7 @@ class PopupViewModel: PopupViewModelType {
 		location.lookUpLocationName { name in
 			
 			self.locality = name
-			self.didFindLocality?(true)
+			self.didFindLocality?()
 		}
 		
 	}

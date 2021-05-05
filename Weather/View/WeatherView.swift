@@ -167,6 +167,11 @@ class WeatherView: UIView {
 	let mainWeatherImage: UIImageView = {
 		let imageView = UIImageView()
 		imageView.contentMode = .scaleAspectFill
+		
+		let mask = UIImageView(image: UIImage(named: "mask"))
+		mask.alpha = 1
+		imageView.mask = mask
+		
 		return imageView
 	}()
 	
