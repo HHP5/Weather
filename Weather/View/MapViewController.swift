@@ -79,6 +79,12 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		
 	}
 
+	private func chechAnnotation() {
+		if !mapView.annotations.isEmpty {
+			mapView.removeAnnotations(mapView.annotations)
+		}
+	}
+	
 	@objc private func showWeather() {
 		
 		let city = viewModel.weatherPoint(location: currentLocation)
@@ -87,19 +93,13 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		self.navigationController?.pushViewController(destinationVC, animated: true)
 		
 		popupView?.removeFromSuperview()
-		
-		if !mapView.annotations.isEmpty {
-			mapView.removeAnnotations(mapView.annotations)
-		}
-		
+		chechAnnotation()
 		searchController.isActive = false
 		
 	}
 	
 	@objc private func closePopup() {
-		if !mapView.annotations.isEmpty {
-			mapView.removeAnnotations(mapView.annotations)
-		}
+		chechAnnotation()
 		popupView?.removeFromSuperview()
 	}
 	
@@ -119,6 +119,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	}
 	
 	private func makePoint(in coordinate: CLLocationCoordinate2D) {
+		chechAnnotation()
 		let point = MKPointAnnotation()
 		point.coordinate = coordinate
 		
