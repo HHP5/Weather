@@ -69,11 +69,11 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		searchController.delegate = self
 		locationManager.delegate = self
 		mapView.delegate = self
-		
 		searchController.searchBar.delegate = self
-		setNavBar()
-		setMapView()
-		setGestureRecognizer()
+		
+		setupNavigationBar()
+		setupMapView()
+		setupGestureRecognizer()
 		
 		checkLocationAuthorization(status: locationManager.authorizationStatus)
 		locationManager.requestWhenInUseAuthorization()
@@ -94,25 +94,25 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	
 	private func closePopup() {
 		print(#function)
-		chechAnnotation()
+		removeAnnotationsIfNeeded()
 		popupView?.removeFromSuperview()
 		
 	}
 	
-	private func chechAnnotation() {
+	private func removeAnnotationsIfNeeded() {
 		if !mapView.annotations.isEmpty {
 			mapView.removeAnnotations(mapView.annotations)
 		}
 	}
 	
-	private func setGestureRecognizer() {
+	private func setupGestureRecognizer() {
 		let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
 		gestureRecognizer.delegate = self
 		mapView.addGestureRecognizer(gestureRecognizer)
 	}
 	
 	private func makePoint(in coordinate: CLLocationCoordinate2D) {
-		chechAnnotation()
+		removeAnnotationsIfNeeded()
 		let point = MKPointAnnotation()
 		point.coordinate = coordinate
 		
@@ -134,12 +134,12 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		}
 	}
 	
-	private func setNavBar() {
+	private func setupNavigationBar() {
 		navigationItem.title = "Global Weather"
 		navigationItem.searchController = searchController
 	}
 	
-	private func setMapView() {
+	private func setupMapView() {
 		view.addSubview(mapView)
 		
 		mapView.snp.makeConstraints { make in
@@ -151,7 +151,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	
 }
 
-// MARK: - CLLocationManagerDelegate extension
+// MARK: - CLLocationManagerDelegate
 
 extension MapViewController: CLLocationManagerDelegate {
 	
@@ -197,7 +197,7 @@ extension MapViewController: CLLocationManagerDelegate {
 	}
 	
 }
-// MARK: - UISearchBarDelegate extension
+// MARK: - UISearchBarDelegate
 
 extension MapViewController: UISearchBarDelegate {
 	
@@ -221,6 +221,8 @@ extension MapViewController: UISearchBarDelegate {
 	
 }
 
+// MARK: - PopupButtonDelegate
+
 extension MapViewController: PopupButtonDelegate {
 	func didPressButton(button: PopupButton) {
 		
@@ -232,13 +234,13 @@ extension MapViewController: PopupButtonDelegate {
 			
 		case .showWeather:
 			
-			let city = viewModel.weatherPoint(location: currentLocation)
-			let destinationVC = WeatherViewController(viewModel: city)
+			let weatherViewMode = viewModel.weatherPoint(location: currentLocation)
+			let destinationVC = WeatherViewController(viewModel: weatherViewMode)
 			destinationVC.modalPresentationStyle = .fullScreen
 			self.navigationController?.pushViewController(destinationVC, animated: true)
 			
 			popupView?.removeFromSuperview()
-			chechAnnotation()
+			removeAnnotationsIfNeeded()
 			searchController.isActive = false
 		}
 	}

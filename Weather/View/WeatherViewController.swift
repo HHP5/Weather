@@ -6,23 +6,21 @@
 //
 
 import UIKit
+import SnapKit
 
 class WeatherViewController: UIViewController {
 	
 	// MARK: - Properties
 
 	private var viewModel: WeatherViewModelType
+	private let weatherView = WeatherView()
 
 	// MARK: - Init
 
 	init(viewModel: WeatherViewModelType) {
 
 		self.viewModel = viewModel
-		
 		super.init(nibName: nil, bundle: nil)
-
-		viewModel.fetcingWeather()
-		self.bindToViewModel()
 		
 	}
 	
@@ -39,28 +37,24 @@ class WeatherViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		setupWeatherView()
+		setupNavigationBar()
 		
-		view.backgroundColor = .white
-		setNavBar()
+		viewModel.fetcingWeather()
+		bindToViewModel()
 		
-		view()?.startActivityIndicator()
-
+		weatherView.startActivityIndicator()
 	}
 	
 	// MARK: - Private Methods
 	
-	private func view() -> WeatherView? {
-	   return self.view as? WeatherView
-	}
-	
 	private func bindToViewModel() {
 
 		viewModel.didFinishRequest = { [weak self] in
-			self?.view()?.stopActivityIndicator()
+			self?.weatherView.stopActivityIndicator()
 		}
 
 		viewModel.didUpdateData = { [weak self]  in
-			self?.view()?.setConstraints()
 			self?.updatePage()
 		}
 
@@ -72,7 +66,7 @@ class WeatherViewController: UIViewController {
 	}
 	
 	private func updatePage() {
-		view()?.weatherInfo = WeatherInfo(locality: viewModel.locality,
+		weatherView.weatherInfo = WeatherInfo(locality: viewModel.locality,
 										  weatherDescriprion: viewModel.weatherDescription,
 										  temperature: viewModel.temperature,
 										  pressure: viewModel.pressure,
@@ -82,10 +76,20 @@ class WeatherViewController: UIViewController {
 										  weatherIcon: viewModel.imageWeather)
 	}
 	
-	private func setNavBar() {
+	private func setupNavigationBar() {
 		navigationController?.navigationBar.topItem?.backButtonTitle = "Map"
 		navigationController?.navigationBar.barStyle = .black
 		navigationController?.navigationBar.barTintColor = .white
+	}
+	
+	private func setupWeatherView() {
+		view.backgroundColor = .white
+
+		view.addSubview(weatherView)
+
+		weatherView.snp.makeConstraints { make in
+			make.edges.equalToSuperview()
+		}
 	}
 
 }

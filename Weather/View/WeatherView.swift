@@ -16,6 +16,8 @@ class WeatherView: UIView {
 	var weatherInfo: WeatherInfo? {
 		willSet(viewModel) {
 			guard let viewModel = viewModel else { return }
+			setConstraints()
+			
 			locality.text = viewModel.locality
 			weatherDescriprion.text = viewModel.weatherDescriprion
 			temperature.text = viewModel.temperature
@@ -204,12 +206,6 @@ class WeatherView: UIView {
 	
 	// MARK: - Public Methods
 	
-	func setConstraints() {
-		setContentView()
-		setImageView()
-		setTempStack()
-	}
-	
 	func startActivityIndicator() {
 		setActivityViewConstraints()
 		activityView.isHidden = false
@@ -222,6 +218,11 @@ class WeatherView: UIView {
 	}
 	
 	// MARK: - Private Methods
+	private func setConstraints() {
+		setContentView()
+		setImageView()
+		setTempStack()
+	}
 	
 	private func setContentView() {
 		self.addSubview(contentView)
