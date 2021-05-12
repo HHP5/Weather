@@ -73,7 +73,8 @@ class PopupView: UIView {
 		self.viewModel = viewModel
 		
 		super.init(frame: UIScreen.main.bounds)
-						
+		self.shadow()
+		
 		viewModel.getCityNameAndCoordinate()
 		self.bindToViewModel()
 		
@@ -155,5 +156,12 @@ class PopupView: UIView {
 			make.right.equalTo(showWeatherButton.snp.right)
 			make.top.equalTo(labelStack.snp.top)
 		}
+	}
+	
+	private func shadow() {
+		self.layer.shadowColor = UIColor.black.cgColor
+		self.layer.shadowOpacity = 1
+		self.layer.shadowOffset = .zero
+		self.layer.shadowRadius = 10
 	}
 }
