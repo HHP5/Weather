@@ -9,34 +9,36 @@ import UIKit
 import SnapKit
 
 class PopupView: UIView {
+	// MARK: - Properties
+
 	var viewModel: PopupViewModelType
-
-	required init(viewModel: PopupViewModelType) {
-		self.viewModel = viewModel
-		
-		super.init(frame: UIScreen.main.bounds)
-						
-		viewModel.getCityNameAndCoordinate()
-		self.bindToViewModel()
-		
-	}
+	weak var delegate: PopupButtonDelegate?
 	
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-
-	private func bindToViewModel() {
-		viewModel.didFindLocality = { [weak self] in
-			self?.updatePage()
-			self?.setConstraints()
-		}
-	}
+	// MARK: - IBOutlets 
+	private let showWeatherButton: UIButton = {
+		let button = UIButton()
+		button.setTitle("Show Weather", for: .normal)
+		button.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .light)
+		button.setTitleColor(.systemBlue, for: .normal)
+		button.layer.borderColor = UIColor.systemBlue.cgColor
+		button.layer.cornerRadius = 20
+		button.clipsToBounds = true
+		button.layer.borderWidth = 0.5
+		button.addTarget(self, action: #selector(showWeatherButtonPressed), for: .touchUpInside)
+		return button
+	}()
 	
-	private func updatePage() {
-		localityLabel.text = viewModel.locality
-		coordinateLabel.text = viewModel.coordinate
-	}
-	 
+	private let closeButton: UIButton = {
+		let button = UIButton()
+		button.frame.size = CGSize(width: 40, height: 40)
+		let image = UIImage(systemName: "xmark")
+		image?.withTintColor(.systemBlue)
+		button.addTarget(self, action: #selector(closeButtonPressed), for: .touchUpInside)
+		button.imageView?.contentMode = .scaleToFill
+		button.setImage(image, for: .normal)
+		return button
+	}()
+	
 	private let localityLabel: UILabel = {
 		let label = UILabel()
 		label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
@@ -65,35 +67,23 @@ class PopupView: UIView {
 		return stack
 	}()
 	
-	let showWeatherButton: UIButton = {
-		let button = UIButton()
-		button.setTitle("Show Weather", for: .normal)
-		button.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .light)
-		button.setTitleColor(.systemBlue, for: .normal)
-		button.layer.borderColor = UIColor.systemBlue.cgColor
-		button.layer.cornerRadius = 20
-		button.clipsToBounds = true
-		button.layer.borderWidth = 0.5
-		return button
-	}()
+	// MARK: - Init
 	
-	let closeButton: UIButton = {
-		let button = UIButton()
-		button.frame.size = CGSize(width: 40, height: 40)
-		let image = UIImage(systemName: "xmark")
-		image?.withTintColor(.systemBlue)
-
-		button.imageView?.contentMode = .scaleToFill
-		button.setImage(image, for: .normal)
-		return button
-	}()
-	
-	private func setConstraints() {
-		setContainer()
-		setLabelStack()
-		setShowWeatherButton()
-		setCloseButton()
+	required init(viewModel: PopupViewModelType) {
+		self.viewModel = viewModel
+		
+		super.init(frame: UIScreen.main.bounds)
+						
+		viewModel.getCityNameAndCoordinate()
+		self.bindToViewModel()
+		
 	}
+	
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
+	// MARK: - Public Methods
 	
 	func setContainer() {
 		self.addSubview(container)
@@ -104,6 +94,37 @@ class PopupView: UIView {
 			make.left.equalToSuperview().offset(30)
 			make.right.equalToSuperview().offset(-30)
 		}
+	}
+	
+	// MARK: - Actions
+	
+	@objc func closeButtonPressed() {
+		self.delegate?.didPressButton(button: .close)
+	}
+	
+	@objc func showWeatherButtonPressed() {
+		self.delegate?.didPressButton(button: .showWeather)
+	}
+	
+	// MARK: - Private Methods
+
+	private func bindToViewModel() {
+		viewModel.didFindLocality = { [weak self] in
+			self?.updatePage()
+			self?.setConstraints()
+		}
+	}
+	
+	private func updatePage() {
+		localityLabel.text = viewModel.locality
+		coordinateLabel.text = viewModel.coordinate
+	}
+	 
+	private func setConstraints() {
+		setContainer()
+		setLabelStack()
+		setShowWeatherButton()
+		setCloseButton()
 	}
 	
 	private func setLabelStack() {
@@ -135,5 +156,4 @@ class PopupView: UIView {
 			make.top.equalTo(labelStack.snp.top)
 		}
 	}
-	
 }

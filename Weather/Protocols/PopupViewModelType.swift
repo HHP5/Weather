@@ -12,4 +12,5 @@ protocol PopupViewModelType {
 	var coordinate: String {get}
 	func getCityNameAndCoordinate()
 	var didFindLocality: (() -> Void)? {get set}
+
 }

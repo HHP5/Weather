@@ -11,10 +11,35 @@ import CoreLocation
 import SnapKit
 
 class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapViewDelegate, UISearchControllerDelegate {
+	
+	// MARK: - Properties
 	private var viewModel: MapViewModelType
+	
+	private var popupView: PopupView?
+	
+	private let searchController: UISearchController = {
+		let searchController = UISearchController(searchResultsController: nil)
+		searchController.obscuresBackgroundDuringPresentation = false
+		searchController.searchBar.placeholder = "Search for places"
+		searchController.searchBar.backgroundColor = .clear
+		searchController.searchBar.tintColor = .black
+		return searchController
+	}()
+	
+	private let locationManager: CLLocationManager = {
+		let locationManager = CLLocationManager()
+		locationManager.desiredAccuracy = kCLLocationAccuracyBest
+		locationManager.distanceFilter = 10
+		return locationManager
+	}()
+	
+	private var currentLocation: CLLocation = CLLocation()
+	
+	// MARK: - Init
 	
 	init(viewModel: MapViewModelType) {
 		self.viewModel = viewModel
+		
 		super.init(nibName: nil, bundle: nil)
 	}
 	
@@ -22,15 +47,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		fatalError("init(coder:) has not been implemented")
 	}
 	
-	private var popupView: PopupView? {
-		willSet(popupView) {
-			
-			guard let popupView = popupView else { return }
-			popupView.showWeatherButton.addTarget(self, action: #selector(showWeather), for: .touchUpInside)
-			popupView.closeButton.addTarget(self, action: #selector(closePopup), for: .allEvents)
-			
-		}
-	}
+	// MARK: - IBOutlets
 	
 	private let mapView: MKMapView = {
 		let map = MKMapView()
@@ -43,23 +60,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		return map
 	}()
 	
-	private let locationManager: CLLocationManager = {
-		let locationManager = CLLocationManager()
-		locationManager.desiredAccuracy = kCLLocationAccuracyBest
-		locationManager.distanceFilter = 10
-		return locationManager
-	}()
-	
-	private let searchController: UISearchController = {
-		let searchController = UISearchController(searchResultsController: nil)
-		searchController.obscuresBackgroundDuringPresentation = false
-		searchController.searchBar.placeholder = "Search for places"
-		searchController.searchBar.backgroundColor = .clear
-		searchController.searchBar.tintColor = .black
-		return searchController
-	}()
-	
-	var currentLocation: CLLocation = CLLocation()
+	// MARK: - Lifecycle
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -68,47 +69,18 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		searchController.delegate = self
 		locationManager.delegate = self
 		mapView.delegate = self
-		searchController.searchBar.delegate = self
 		
+		searchController.searchBar.delegate = self
 		setNavBar()
 		setMapView()
 		setGestureRecognizer()
 		
 		checkLocationAuthorization(status: locationManager.authorizationStatus)
 		locationManager.requestWhenInUseAuthorization()
-		
 	}
+	
+	// MARK: - Actions (@ojbc + @IBActions)
 
-	private func chechAnnotation() {
-		if !mapView.annotations.isEmpty {
-			mapView.removeAnnotations(mapView.annotations)
-		}
-	}
-	
-	@objc private func showWeather() {
-		
-		let city = viewModel.weatherPoint(location: currentLocation)
-		let destinationVC = WeatherViewController(viewModel: city)
-		destinationVC.modalPresentationStyle = .fullScreen
-		self.navigationController?.pushViewController(destinationVC, animated: true)
-		
-		popupView?.removeFromSuperview()
-		chechAnnotation()
-		searchController.isActive = false
-		
-	}
-	
-	@objc private func closePopup() {
-		chechAnnotation()
-		popupView?.removeFromSuperview()
-	}
-	
-	private func setGestureRecognizer() {
-		let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-		gestureRecognizer.delegate = self
-		mapView.addGestureRecognizer(gestureRecognizer)
-	}
-	
 	@objc private func handleTap(gestureRecognizer: UILongPressGestureRecognizer) {
 		
 		let location = gestureRecognizer.location(in: mapView)
@@ -116,6 +88,27 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		
 		self.makePoint(in: coordinate)
 		self.locationManager(locationManager, didUpdateLocations: coordinate)
+	}
+	
+	// MARK: - Private Methods
+	
+	private func closePopup() {
+		print(#function)
+		chechAnnotation()
+		popupView?.removeFromSuperview()
+		
+	}
+	
+	private func chechAnnotation() {
+		if !mapView.annotations.isEmpty {
+			mapView.removeAnnotations(mapView.annotations)
+		}
+	}
+	
+	private func setGestureRecognizer() {
+		let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+		gestureRecognizer.delegate = self
+		mapView.addGestureRecognizer(gestureRecognizer)
 	}
 	
 	private func makePoint(in coordinate: CLLocationCoordinate2D) {
@@ -131,10 +124,13 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	
 	private func addPopup() {
 		viewModel.coordinateInPoint(location: currentLocation) { [weak self] model in
-			self?.popupView = PopupView(viewModel: model)
+			guard let self = self else {return}
 			
-			guard let popupView = self?.popupView else {return}
-			self?.view.addSubview(popupView)
+			self.popupView = PopupView(viewModel: model)
+		
+			guard let popupView = self.popupView else {return}
+			popupView.delegate = self
+			self.view.addSubview(popupView)
 		}
 	}
 	
@@ -154,6 +150,8 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	}
 	
 }
+
+// MARK: - CLLocationManagerDelegate extension
 
 extension MapViewController: CLLocationManagerDelegate {
 	
@@ -199,6 +197,7 @@ extension MapViewController: CLLocationManagerDelegate {
 	}
 	
 }
+// MARK: - UISearchBarDelegate extension
 
 extension MapViewController: UISearchBarDelegate {
 	
@@ -217,8 +216,30 @@ extension MapViewController: UISearchBarDelegate {
 				self.makePoint(in: coordinate)
 				self.searchController.dismiss(animated: true, completion: nil)
 			}
-			
 		}
 	}
 	
+}
+
+extension MapViewController: PopupButtonDelegate {
+	func didPressButton(button: PopupButton) {
+		
+		switch button {
+		
+		case .close:
+			
+			closePopup()
+			
+		case .showWeather:
+			
+			let city = viewModel.weatherPoint(location: currentLocation)
+			let destinationVC = WeatherViewController(viewModel: city)
+			destinationVC.modalPresentationStyle = .fullScreen
+			self.navigationController?.pushViewController(destinationVC, animated: true)
+			
+			popupView?.removeFromSuperview()
+			chechAnnotation()
+			searchController.isActive = false
+		}
+	}
 }

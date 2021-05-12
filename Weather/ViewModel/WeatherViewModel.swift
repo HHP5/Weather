@@ -24,7 +24,7 @@ class WeatherViewModel: WeatherViewModelType {
 		self.location = location
 	}
 	
-	var city: String?
+	var locality: String?
 	
 	var temperature: String?
 	
@@ -44,7 +44,7 @@ class WeatherViewModel: WeatherViewModelType {
 		
 		location.lookUpLocationName { [weak self] city in
 			
-			self?.city = city
+			self?.locality = city
 						
 			self?.serviceLayer.request(router: Router.weather(city: city)) { [weak self] (result: Result<WeatherResponse, Error>) in
 				

@@ -6,10 +6,14 @@
 //
 
 import UIKit
-import Kingfisher
 
 class WeatherViewController: UIViewController {
+	
+	// MARK: - Properties
+
 	private var viewModel: WeatherViewModelType
+
+	// MARK: - Init
 
 	init(viewModel: WeatherViewModelType) {
 
@@ -25,14 +29,12 @@ class WeatherViewController: UIViewController {
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
+	
+	// MARK: - Lifecycle
 
 	override func loadView() {
 		self.view = WeatherView()
 
-	}
-	
-	func view() -> WeatherView? {
-	   return self.view as? WeatherView
 	}
 	
 	override func viewDidLoad() {
@@ -44,7 +46,13 @@ class WeatherViewController: UIViewController {
 		view()?.startActivityIndicator()
 
 	}
-
+	
+	// MARK: - Private Methods
+	
+	private func view() -> WeatherView? {
+	   return self.view as? WeatherView
+	}
+	
 	private func bindToViewModel() {
 
 		viewModel.didFinishRequest = { [weak self] in
@@ -53,7 +61,6 @@ class WeatherViewController: UIViewController {
 
 		viewModel.didUpdateData = { [weak self]  in
 			self?.view()?.setConstraints()
-
 			self?.updatePage()
 		}
 
@@ -65,14 +72,14 @@ class WeatherViewController: UIViewController {
 	}
 	
 	private func updatePage() {
-		view()?.locality.text = viewModel.city
-		view()?.weatherDescriprion.text = viewModel.weatherDescription
-		view()?.temperature.text = viewModel.temperature
-		view()?.pressureValue.text = viewModel.pressure
-		view()?.humidityValue.text = viewModel.humidity
-		view()?.windValue.text = viewModel.wind
-		view()?.mainWeatherImage.image = viewModel.mainWeatherImage
-		view()?.weatherIcon.kf.setImage(with: viewModel.imageWeather)
+		view()?.weatherInfo = WeatherInfo(locality: viewModel.locality,
+										  weatherDescriprion: viewModel.weatherDescription,
+										  temperature: viewModel.temperature,
+										  pressure: viewModel.pressure,
+										  humidity: viewModel.humidity,
+										  windValue: viewModel.wind,
+										  mainWeatherImage: viewModel.mainWeatherImage,
+										  weatherIcon: viewModel.imageWeather)
 	}
 	
 	private func setNavBar() {

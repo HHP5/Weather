@@ -7,25 +7,44 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 class WeatherView: UIView {
 	
-	let contentView = UIView()
+	// MARK: - Properties
 	
-	let locality: UILabel = {
+	var weatherInfo: WeatherInfo? {
+		willSet(viewModel) {
+			guard let viewModel = viewModel else { return }
+			locality.text = viewModel.locality
+			weatherDescriprion.text = viewModel.weatherDescriprion
+			temperature.text = viewModel.temperature
+			pressureValue.text = viewModel.pressure
+			humidityValue.text = viewModel.humidity
+			windValue.text = viewModel.windValue
+			mainWeatherImage.image = viewModel.mainWeatherImage
+			weatherIcon.kf.setImage(with: viewModel.weatherIcon)
+		}
+	}
+	
+	// MARK: - IBOutlets
+	
+	private let contentView = UIView()
+	
+	private let locality: UILabel = {
 		let label = UILabel()
 		label.font = UIFont(name: FontStyle.sfProDisplay.rawValue, size: 34)
 		return label
 	}()
 	
-	let temperature: UILabel = {
+	private let temperature: UILabel = {
 		let label = UILabel()
 		label.font = UIFont(name: FontStyle.sfProTextSemibold.rawValue, size: 120)
 		label.textColor = #colorLiteral(red: 0.1262762547, green: 0.1255328953, blue: 0.1268522739, alpha: 1)
 		return label
 	}()
 	
-	let celsius: UIImageView = {
+	private let celsius: UIImageView = {
 		let imageView = UIImageView()
 		imageView.contentMode = .scaleAspectFit
 		imageView.image = UIImage(named: "celsius")
@@ -40,7 +59,7 @@ class WeatherView: UIView {
 		return stack
 	}()
 	
-	let weatherDescriprion: UILabel = {
+	private let weatherDescriprion: UILabel = {
 		let label = UILabel()
 		label.font = UIFont(name: FontStyle.sfProText.rawValue, size: 22)
 		label.snp.makeConstraints { $0.width.equalTo(100) }
@@ -52,13 +71,13 @@ class WeatherView: UIView {
 		return label
 	}()
 	
-	let weatherIcon: UIImageView = {
+	private let weatherIcon: UIImageView = {
 		let imageView = UIImageView()
 		imageView.kf.indicatorType = .activity
 		imageView.contentMode = .center
 		return imageView
 	}()
-
+	
 	private lazy var weatherDescriptionStack: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [weatherIcon, weatherDescriprion])
 		stack.axis = .vertical
@@ -83,7 +102,7 @@ class WeatherView: UIView {
 		return stack
 	}()
 	
-	let humidity: UILabel = {
+	private let humidity: UILabel = {
 		let label = UILabel()
 		label.font = UIFont(name: FontStyle.sfProText.rawValue, size: 20)
 		label.text = "HUMIDITY"
@@ -91,7 +110,7 @@ class WeatherView: UIView {
 		return label
 	}()
 	
-	let humidityValue: UILabel = {
+	private let humidityValue: UILabel = {
 		let label = UILabel()
 		label.font = UIFont(name: FontStyle.sfProTextSemibold.rawValue, size: 20)
 		label.textColor = .black
@@ -105,7 +124,7 @@ class WeatherView: UIView {
 		return stack
 	}()
 	
-	let wind: UILabel = {
+	private let wind: UILabel = {
 		let label = UILabel()
 		label.font = UIFont(name: FontStyle.sfProText.rawValue, size: 20)
 		label.text = "WIND"
@@ -113,7 +132,7 @@ class WeatherView: UIView {
 		return label
 	}()
 	
-	let windValue: UILabel = {
+	private let windValue: UILabel = {
 		let label = UILabel()
 		label.font = UIFont(name: FontStyle.sfProTextSemibold.rawValue, size: 20)
 		label.textColor = .black
@@ -127,7 +146,7 @@ class WeatherView: UIView {
 		return stack
 	}()
 	
-	let pressure: UILabel = {
+	private let pressure: UILabel = {
 		let label = UILabel()
 		label.font = UIFont(name: FontStyle.sfProText.rawValue, size: 20)
 		label.text = "PRESSURE"
@@ -135,7 +154,7 @@ class WeatherView: UIView {
 		return label
 	}()
 	
-	let pressureValue: UILabel = {
+	private let pressureValue: UILabel = {
 		let label = UILabel()
 		label.font = UIFont(name: FontStyle.sfProTextSemibold.rawValue, size: 20)
 		label.textColor = .black
@@ -155,7 +174,7 @@ class WeatherView: UIView {
 		stack.distribution = .equalSpacing
 		return stack
 	}()
-
+	
 	private lazy var infoStack: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [mainParametersAndCityNameStack, additionalParametersStack])
 		stack.axis = .vertical
@@ -164,7 +183,7 @@ class WeatherView: UIView {
 		return stack
 	}()
 	
-	let mainWeatherImage: UIImageView = {
+	private let mainWeatherImage: UIImageView = {
 		let imageView = UIImageView()
 		imageView.contentMode = .scaleAspectFill
 		
@@ -180,16 +199,29 @@ class WeatherView: UIView {
 		stack.axis = .horizontal
 		return stack
 	}()
-
+	
 	private let activityView = UIActivityIndicatorView(style: .large)
 	
-	func setConstraints() {
+	// MARK: - Public Methods
 	
+	func setConstraints() {
 		setContentView()
 		setImageView()
 		setTempStack()
-		
 	}
+	
+	func startActivityIndicator() {
+		setActivityViewConstraints()
+		activityView.isHidden = false
+		activityView.startAnimating()
+	}
+	
+	func stopActivityIndicator() {
+		activityView.stopAnimating()
+		activityView.isHidden = true
+	}
+	
+	// MARK: - Private Methods
 	
 	private func setContentView() {
 		self.addSubview(contentView)
@@ -207,25 +239,12 @@ class WeatherView: UIView {
 		activityView.snp.makeConstraints { $0.center.equalToSuperview() }
 	}
 	
-	func startActivityIndicator() {
-		setActivityViewConstraints()
-		activityView.isHidden = false
-		activityView.startAnimating()
-	}
-	
-	func stopActivityIndicator() {
-		activityView.stopAnimating()
-		activityView.isHidden = true
-	}
-	
 	private func setImageView() {
 		
 		self.addSubview(mainWeatherImage)
-
 		mainWeatherImage.snp.makeConstraints { $0.bottom.right.equalToSuperview() }
-		
 	}
-
+	
 	private func setTempStack() {
 		contentView.addSubview(infoStack)
 		

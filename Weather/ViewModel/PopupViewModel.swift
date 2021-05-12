@@ -9,6 +9,7 @@ import Foundation
 import MapKit
 
 class PopupViewModel: PopupViewModelType {
+	
 	var coordinate: String {
 		return "\(latitude)   \(longitude)"
 	}

@@ -28,9 +28,7 @@ enum Router {
 	var path: String {
 		switch self {
 		case .weather:
-			//			return "/data/2.5/weather?q=\(city)"
 			return "/data/2.5/weather"
-			
 		}
 	}
 	

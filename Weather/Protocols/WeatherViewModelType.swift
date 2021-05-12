@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 protocol WeatherViewModelType {
-	var city: String? {get}
+	var locality: String? {get}
 	
 	var temperature: String? {get}
 	
