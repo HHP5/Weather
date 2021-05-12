@@ -72,7 +72,7 @@ class PopupView: UIView {
 	required init(viewModel: PopupViewModelType) {
 		self.viewModel = viewModel
 		
-		super.init(frame: UIScreen.main.bounds)
+		super.init(frame: .zero)
 		self.shadow()
 		
 		viewModel.getCityNameAndCoordinate()
@@ -90,10 +90,7 @@ class PopupView: UIView {
 		self.addSubview(container)
 		
 		container.snp.makeConstraints { make in
-			make.height.equalTo(170)
-			make.bottom.equalToSuperview().offset(-20)
-			make.left.equalToSuperview().offset(30)
-			make.right.equalToSuperview().offset(-30)
+			make.edges.equalToSuperview()
 		}
 	}
 	

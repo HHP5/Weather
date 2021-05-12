@@ -218,6 +218,7 @@ class WeatherView: UIView {
 	}
 	
 	// MARK: - Private Methods
+	
 	private func setConstraints() {
 		setContentView()
 		setImageView()

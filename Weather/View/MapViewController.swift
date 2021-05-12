@@ -93,7 +93,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	// MARK: - Private Methods
 	
 	private func closePopup() {
-		print(#function)
+
 		removeAnnotationsIfNeeded()
 		popupView?.removeFromSuperview()
 		
@@ -112,7 +112,8 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	}
 	
 	private func makePoint(in coordinate: CLLocationCoordinate2D) {
-		removeAnnotationsIfNeeded()
+		closePopup()
+
 		let point = MKPointAnnotation()
 		point.coordinate = coordinate
 		
@@ -130,13 +131,26 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		
 			guard let popupView = self.popupView else {return}
 			popupView.delegate = self
-			self.view.addSubview(popupView)
+			
+			self.setupPopup()
 		}
 	}
 	
 	private func setupNavigationBar() {
 		navigationItem.title = "Global Weather"
 		navigationItem.searchController = searchController
+	}
+	
+	private func setupPopup() {
+		guard let popup = popupView else { return  }
+		view.addSubview(popup)
+		
+		popup.snp.makeConstraints { make in
+			make.height.equalTo(170)
+			make.bottom.equalToSuperview().offset(-20)
+			make.left.equalToSuperview().offset(30)
+			make.right.equalToSuperview().offset(-30)
+		}
 	}
 	
 	private func setupMapView() {
