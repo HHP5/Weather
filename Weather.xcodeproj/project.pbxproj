@@ -151,9 +151,9 @@
 			isa = PBXGroup;
 			children = (
 				49044E0626302F8F0061A719 /* MapViewController.swift */,
+				498D64D72637F92300F58D54 /* PopupView.swift */,
 				499719AA26357667007D7BD3 /* WeatherViewController.swift */,
 				49BFDCE82639A3E200B0B78A /* WeatherView.swift */,
-				498D64D72637F92300F58D54 /* PopupView.swift */,
 				493E0176264CE5570081EF7F /* PressureHumidityWindInfoView.swift */,
 				493E0178264CF9580081EF7F /* TemperatureParametersView.swift */,
 			);

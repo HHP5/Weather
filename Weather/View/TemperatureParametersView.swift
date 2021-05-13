@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import Kingfisher
+import SnapKit
 
 class TemperatureParametersView: UIView {
 	// MARK: - IBOutlets
@@ -24,10 +26,45 @@ class TemperatureParametersView: UIView {
 		return imageView
 	}()
 	
+	private let weatherDescriprion: UILabel = {
+		let label = UILabel()
+		label.font = UIFont(name: FontStyle.sfProText.rawValue, size: 22)
+		label.snp.makeConstraints { $0.width.equalTo(100) }
+		label.numberOfLines = 0
+		label.adjustsFontSizeToFitWidth = true
+		label.lineBreakMode = .byWordWrapping
+		label.textAlignment = .center
+		label.textColor = #colorLiteral(red: 0.1137254902, green: 0.1176470588, blue: 0.1215686275, alpha: 1)
+		return label
+	}()
+	
+	private let weatherIcon: UIImageView = {
+		let imageView = UIImageView()
+		imageView.kf.indicatorType = .activity
+		imageView.contentMode = .center
+		return imageView
+	}()
+	
+	private lazy var weatherStack: UIStackView = {
+		let stack = UIStackView(arrangedSubviews: [weatherIcon, weatherDescriprion])
+		stack.axis = .vertical
+		stack.alignment = .center
+//		stack.spacing = 20
+		return stack
+	}()
+	
+	private lazy var stack: UIStackView = {
+		let stack = UIStackView(arrangedSubviews: [temperature, weatherStack])
+		stack.axis = .vertical
+		stack.alignment = .center
+		return stack
+	}()
 	// MARK: - Init
 	
-	init(temperature: String?) {
-		self.temperature.text = temperature
+	init(for weatherInfo: WeatherInfo) {
+		self.temperature.text = weatherInfo.temperature
+		self.weatherDescriprion.text = weatherInfo.weatherDescriprion
+		self.weatherIcon.kf.setImage(with: weatherInfo.weatherIcon)
 		
 		super.init(frame: .zero)
 		
@@ -41,9 +78,16 @@ class TemperatureParametersView: UIView {
 	// MARK: - Private Methods
 	
 	private func setConstraints() {
-		self.addSubview(temperature)
-		temperature.snp.makeConstraints { make in
-			make.top.bottom.left.equalToSuperview()
+//		self.addSubview(temperature)
+//		temperature.snp.makeConstraints { make in
+//			make.top.left.equalToSuperview()
+//		}
+		
+		
+		self.addSubview(stack)
+		
+		stack.snp.makeConstraints { make in
+			make.edges.equalToSuperview()
 		}
 		
 		self.addSubview(celsius)
@@ -52,5 +96,6 @@ class TemperatureParametersView: UIView {
 			make.top.equalToSuperview().offset(10)
 			make.height.width.equalTo(70)
 		}
+		
 	}
 }
