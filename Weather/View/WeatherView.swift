@@ -87,11 +87,11 @@ class WeatherView: UIView {
 	// MARK: - Private Methods
 	private func setPressureHumidityWindStack(value: WeatherInfo) {
 		
-		let pressure = PressureHumidityWindInfoView(parameter: "Pressure", value: value.pressure)
-		let humidity = PressureHumidityWindInfoView(parameter: "Humidity", value: value.humidity)
-		let wind = PressureHumidityWindInfoView(parameter: "Wind", value: value.windValue)
+		let pressure = PressureHumidityWindInfoView(parameter: AdditionalWeatherParameters.pressure.rawValue, value: value.pressure)
+		let humidity = PressureHumidityWindInfoView(parameter: AdditionalWeatherParameters.humidity.rawValue, value: value.humidity)
+		let wind = PressureHumidityWindInfoView(parameter: AdditionalWeatherParameters.wind.rawValue, value: value.windValue)
 		
-		setStack(parameters: [humidity, pressure, wind])
+		makeParametersStack(parameters: [humidity, pressure, wind])
 	}
 	
 	private func setConstraints() {
@@ -124,11 +124,15 @@ class WeatherView: UIView {
 		}
 	}
 	
-	private func setStack(parameters: [PressureHumidityWindInfoView]) {
+	private func makeParametersStack(parameters: [PressureHumidityWindInfoView]) {
 		additionalParametersStack = UIStackView(arrangedSubviews: parameters)
 		additionalParametersStack.axis = .vertical
 		additionalParametersStack.distribution = .equalSpacing
 		
+		setupStack()
+	}
+	
+	private func setupStack() {
 		contentView.addSubview(stack)
 		
 		stack.snp.makeConstraints { make in

@@ -10,7 +10,7 @@ import SnapKit
 
 class PopupView: UIView {
 	// MARK: - Properties
-
+	
 	var viewModel: PopupViewModelType
 	weak var delegate: PopupButtonDelegate?
 	
@@ -90,22 +90,25 @@ class PopupView: UIView {
 		self.addSubview(container)
 		
 		container.snp.makeConstraints { make in
-			make.edges.equalToSuperview()
+			make.height.equalTo(170)
+			make.bottom.equalToSuperview().offset(-20)
+			make.left.equalToSuperview().offset(30)
+			make.right.equalToSuperview().offset(-30)
 		}
 	}
 	
 	// MARK: - Actions
 	
-	@objc private func closeButtonPressed() {
+	@objc func closeButtonPressed() {
 		self.delegate?.didPressButton(button: .close)
 	}
 	
-	@objc private func showWeatherButtonPressed() {
+	@objc func showWeatherButtonPressed() {
 		self.delegate?.didPressButton(button: .showWeather)
 	}
 	
 	// MARK: - Private Methods
-
+	
 	private func bindToViewModel() {
 		viewModel.didFindLocality = { [weak self] in
 			self?.updatePage()
@@ -117,7 +120,7 @@ class PopupView: UIView {
 		localityLabel.text = viewModel.locality
 		coordinateLabel.text = viewModel.coordinate
 	}
-	 
+	
 	private func setConstraints() {
 		setContainer()
 		setLabelStack()

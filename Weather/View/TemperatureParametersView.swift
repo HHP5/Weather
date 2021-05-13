@@ -49,7 +49,6 @@ class TemperatureParametersView: UIView {
 		let stack = UIStackView(arrangedSubviews: [weatherIcon, weatherDescriprion])
 		stack.axis = .vertical
 		stack.alignment = .center
-//		stack.spacing = 20
 		return stack
 	}()
 	
@@ -78,12 +77,7 @@ class TemperatureParametersView: UIView {
 	// MARK: - Private Methods
 	
 	private func setConstraints() {
-//		self.addSubview(temperature)
-//		temperature.snp.makeConstraints { make in
-//			make.top.left.equalToSuperview()
-//		}
-		
-		
+
 		self.addSubview(stack)
 		
 		stack.snp.makeConstraints { make in

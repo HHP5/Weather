@@ -34,7 +34,7 @@ class PressureHumidityWindInfoView: UIView {
 	
 	// MARK: - Init
 	
-	init(parameter: String, value: String?) {
+	init(parameter: AdditionalWeatherParameters.RawValue, value: String?) {
 		self.name.text = parameter
 		self.value.text = value
 		

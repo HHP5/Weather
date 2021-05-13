@@ -17,6 +17,8 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	
 	private var popupView: PopupView?
 	
+	private var isPopupAdded: Bool = false
+	
 	private let searchController: UISearchController = {
 		let searchController = UISearchController(searchResultsController: nil)
 		searchController.obscuresBackgroundDuringPresentation = false
@@ -74,13 +76,20 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		setupNavigationBar()
 		setupMapView()
 		setupGestureRecognizer()
+		//		setupPopup()
 		
 		checkLocationAuthorization(status: locationManager.authorizationStatus)
 		locationManager.requestWhenInUseAuthorization()
 	}
 	
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		
+		//		setupPopup()
+	}
+	
 	// MARK: - Actions (@ojbc + @IBActions)
-
+	
 	@objc private func handleTap(gestureRecognizer: UILongPressGestureRecognizer) {
 		
 		let location = gestureRecognizer.location(in: mapView)
@@ -93,10 +102,11 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	// MARK: - Private Methods
 	
 	private func closePopup() {
-
-		removeAnnotationsIfNeeded()
-		popupView?.removeFromSuperview()
 		
+		removeAnnotationsIfNeeded()
+//		popupView?.removeFromSuperview()
+		popupView?.alpha = 0
+		popupView?.isHidden = true
 	}
 	
 	private func removeAnnotationsIfNeeded() {
@@ -113,7 +123,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	
 	private func makePoint(in coordinate: CLLocationCoordinate2D) {
 		closePopup()
-
+		
 		let point = MKPointAnnotation()
 		point.coordinate = coordinate
 		
@@ -128,11 +138,17 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 			guard let self = self else {return}
 			
 			self.popupView = PopupView(viewModel: model)
-		
-			guard let popupView = self.popupView else {return}
-			popupView.delegate = self
 			
-			self.setupPopup()
+//			guard let popupView = self.popupView else {return}
+//			popupView.delegate = self
+			print(#function)
+			if self.isPopupAdded {
+				self.popupView?.isHidden = false
+				self.popupView?.alpha = 1
+			} else {
+				self.setupPopup()
+				
+			}
 		}
 	}
 	
@@ -142,15 +158,22 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	}
 	
 	private func setupPopup() {
-		guard let popup = popupView else { return  }
-		view.addSubview(popup)
+		guard let popupView = popupView else { return  }
+		print(#function)
+		popupView.delegate = self
 		
-		popup.snp.makeConstraints { make in
+		view.addSubview(popupView)
+		
+		popupView.snp.makeConstraints { make in
 			make.height.equalTo(170)
 			make.bottom.equalToSuperview().offset(-20)
 			make.left.equalToSuperview().offset(30)
 			make.right.equalToSuperview().offset(-30)
 		}
+		popupView.isHidden = true
+		popupView.alpha = 1
+		isPopupAdded = true
+	
 	}
 	
 	private func setupMapView() {
@@ -253,8 +276,7 @@ extension MapViewController: PopupButtonDelegate {
 			destinationVC.modalPresentationStyle = .fullScreen
 			self.navigationController?.pushViewController(destinationVC, animated: true)
 			
-			popupView?.removeFromSuperview()
-			removeAnnotationsIfNeeded()
+			closePopup()
 			searchController.isActive = false
 		}
 	}
