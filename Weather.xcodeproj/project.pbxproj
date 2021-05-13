@@ -28,6 +28,8 @@
 		493E0171264BCD4A0081EF7F /* WeatherInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493E0170264BCD4A0081EF7F /* WeatherInfo.swift */; };
 		493E0173264BF3EE0081EF7F /* PopupButtonDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493E0172264BF3EE0081EF7F /* PopupButtonDelegate.swift */; };
 		493E0175264BF4100081EF7F /* PopupButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493E0174264BF4100081EF7F /* PopupButton.swift */; };
+		493E0177264CE5570081EF7F /* PressureHumidityWindInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493E0176264CE5570081EF7F /* PressureHumidityWindInfoView.swift */; };
+		493E0179264CF9580081EF7F /* TemperatureParametersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493E0178264CF9580081EF7F /* TemperatureParametersView.swift */; };
 		4987583926395FC700FBC3F3 /* WeatherViewModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4987583826395FC700FBC3F3 /* WeatherViewModelType.swift */; };
 		4987583C263960F100FBC3F3 /* WeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4987583B263960F100FBC3F3 /* WeatherViewModel.swift */; };
 		498758402639621F00FBC3F3 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4987583F2639621F00FBC3F3 /* Router.swift */; };
@@ -72,6 +74,8 @@
 		493E0170264BCD4A0081EF7F /* WeatherInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherInfo.swift; sourceTree = "<group>"; };
 		493E0172264BF3EE0081EF7F /* PopupButtonDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupButtonDelegate.swift; sourceTree = "<group>"; };
 		493E0174264BF4100081EF7F /* PopupButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupButton.swift; sourceTree = "<group>"; };
+		493E0176264CE5570081EF7F /* PressureHumidityWindInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressureHumidityWindInfoView.swift; sourceTree = "<group>"; };
+		493E0178264CF9580081EF7F /* TemperatureParametersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureParametersView.swift; sourceTree = "<group>"; };
 		4987583826395FC700FBC3F3 /* WeatherViewModelType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModelType.swift; sourceTree = "<group>"; };
 		4987583B263960F100FBC3F3 /* WeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModel.swift; sourceTree = "<group>"; };
 		4987583F2639621F00FBC3F3 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
@@ -150,6 +154,8 @@
 				499719AA26357667007D7BD3 /* WeatherViewController.swift */,
 				49BFDCE82639A3E200B0B78A /* WeatherView.swift */,
 				498D64D72637F92300F58D54 /* PopupView.swift */,
+				493E0176264CE5570081EF7F /* PressureHumidityWindInfoView.swift */,
+				493E0178264CF9580081EF7F /* TemperatureParametersView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -385,6 +391,7 @@
 				491E9E73263ED7E5009AB46E /* WeatherIcon.swift in Sources */,
 				493E0171264BCD4A0081EF7F /* WeatherInfo.swift in Sources */,
 				491E9E85263EDF21009AB46E /*  CLLocation+LookUpName.swift in Sources */,
+				493E0179264CF9580081EF7F /* TemperatureParametersView.swift in Sources */,
 				4987583C263960F100FBC3F3 /* WeatherViewModel.swift in Sources */,
 				49044E2C2630500F0061A719 /* MapViewModel.swift in Sources */,
 				4987584D26396B3D00FBC3F3 /* WeatherResponse.swift in Sources */,
@@ -400,6 +407,7 @@
 				498758492639648300FBC3F3 /* HandleHTTPStatusCode.swift in Sources */,
 				493E014F264BBADA0081EF7F /* CLLocation+LookUpPlacemark.swift in Sources */,
 				49BFDCF0263A929400B0B78A /* FontStyle.swift in Sources */,
+				493E0177264CE5570081EF7F /* PressureHumidityWindInfoView.swift in Sources */,
 				49044E0526302F8F0061A719 /* SceneDelegate.swift in Sources */,
 				499719A8263566E3007D7BD3 /* LocationDegrees.swift in Sources */,
 				498758432639642200FBC3F3 /* ServiceLayer.swift in Sources */,

@@ -14,18 +14,18 @@ class WeatherView: UIView {
 	// MARK: - Properties
 	
 	var weatherInfo: WeatherInfo? {
-		willSet(viewModel) {
-			guard let viewModel = viewModel else { return }
-			setConstraints()
+		willSet(weatherInfo) {
+			guard let weatherInfo = weatherInfo else { return }
 			
-			locality.text = viewModel.locality
-			weatherDescriprion.text = viewModel.weatherDescriprion
-			temperature.text = viewModel.temperature
-			pressureValue.text = viewModel.pressure
-			humidityValue.text = viewModel.humidity
-			windValue.text = viewModel.windValue
-			mainWeatherImage.image = viewModel.mainWeatherImage
-			weatherIcon.kf.setImage(with: viewModel.weatherIcon)
+			locality.text = weatherInfo.locality
+			weatherDescriprion.text = weatherInfo.weatherDescriprion
+			mainWeatherImage.image = weatherInfo.mainWeatherImage
+			weatherIcon.kf.setImage(with: weatherInfo.weatherIcon)
+			
+			self.temperature = TemperatureParametersView(temperature: weatherInfo.temperature)
+			setPressureHumidityWindStack(value: weatherInfo)
+			
+			setConstraints()
 		}
 	}
 	
@@ -39,28 +39,8 @@ class WeatherView: UIView {
 		return label
 	}()
 	
-	private let temperature: UILabel = {
-		let label = UILabel()
-		label.font = UIFont(name: FontStyle.sfProTextSemibold.rawValue, size: 120)
-		label.textColor = #colorLiteral(red: 0.1262762547, green: 0.1255328953, blue: 0.1268522739, alpha: 1)
-		return label
-	}()
-	
-	private let celsius: UIImageView = {
-		let imageView = UIImageView()
-		imageView.contentMode = .scaleAspectFit
-		imageView.image = UIImage(named: "celsius")
-		imageView.sizeToFit()
-		return imageView
-	}()
-	
-	private lazy var tempValueStack: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [temperature, celsius])
-		stack.axis = .horizontal
-		stack.alignment = .top
-		return stack
-	}()
-	
+	private var temperature = UIView()
+
 	private let weatherDescriprion: UILabel = {
 		let label = UILabel()
 		label.font = UIFont(name: FontStyle.sfProText.rawValue, size: 22)
@@ -89,7 +69,7 @@ class WeatherView: UIView {
 	}()
 	
 	private lazy var mainParametersStack: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [tempValueStack, weatherDescriptionStack])
+		let stack = UIStackView(arrangedSubviews: [temperature, weatherDescriptionStack])
 		stack.axis = .vertical
 		stack.alignment = .leading
 		stack.spacing = -10
@@ -104,78 +84,7 @@ class WeatherView: UIView {
 		return stack
 	}()
 	
-	private let humidity: UILabel = {
-		let label = UILabel()
-		label.font = UIFont(name: FontStyle.sfProText.rawValue, size: 20)
-		label.text = "HUMIDITY"
-		label.textColor = .black
-		return label
-	}()
-	
-	private let humidityValue: UILabel = {
-		let label = UILabel()
-		label.font = UIFont(name: FontStyle.sfProTextSemibold.rawValue, size: 20)
-		label.textColor = .black
-		return label
-	}()
-	
-	private lazy var humidityStack: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [humidity, humidityValue])
-		stack.axis = .vertical
-		stack.spacing = 5
-		return stack
-	}()
-	
-	private let wind: UILabel = {
-		let label = UILabel()
-		label.font = UIFont(name: FontStyle.sfProText.rawValue, size: 20)
-		label.text = "WIND"
-		label.textColor = .black
-		return label
-	}()
-	
-	private let windValue: UILabel = {
-		let label = UILabel()
-		label.font = UIFont(name: FontStyle.sfProTextSemibold.rawValue, size: 20)
-		label.textColor = .black
-		return label
-	}()
-	
-	private lazy var windStack: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [wind, windValue])
-		stack.axis = .vertical
-		stack.spacing = 5
-		return stack
-	}()
-	
-	private let pressure: UILabel = {
-		let label = UILabel()
-		label.font = UIFont(name: FontStyle.sfProText.rawValue, size: 20)
-		label.text = "PRESSURE"
-		label.textColor = .black
-		return label
-	}()
-	
-	private let pressureValue: UILabel = {
-		let label = UILabel()
-		label.font = UIFont(name: FontStyle.sfProTextSemibold.rawValue, size: 20)
-		label.textColor = .black
-		return label
-	}()
-	
-	private lazy var pressureStack: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [pressure, pressureValue])
-		stack.axis = .vertical
-		stack.spacing = 5
-		return stack
-	}()
-	
-	private lazy var additionalParametersStack: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [humidityStack, windStack, pressureStack])
-		stack.axis = .vertical
-		stack.distribution = .equalSpacing
-		return stack
-	}()
+	private lazy var additionalParametersStack = UIStackView()
 	
 	private lazy var infoStack: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [mainParametersAndCityNameStack, additionalParametersStack])
@@ -196,12 +105,6 @@ class WeatherView: UIView {
 		return imageView
 	}()
 	
-	private lazy var stack: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [infoStack, mainWeatherImage])
-		stack.axis = .horizontal
-		return stack
-	}()
-	
 	private let activityView = UIActivityIndicatorView(style: .large)
 	
 	// MARK: - Public Methods
@@ -218,11 +121,18 @@ class WeatherView: UIView {
 	}
 	
 	// MARK: - Private Methods
+	private func setPressureHumidityWindStack(value: WeatherInfo) {
+		
+		let pressure = PressureHumidityWindInfoView(parameter: "Pressure", value: value.pressure)
+		let humidity = PressureHumidityWindInfoView(parameter: "Humidity", value: value.humidity)
+		let wind = PressureHumidityWindInfoView(parameter: "Wind", value: value.windValue)
+		
+		setStack(humidity: humidity, pressure: pressure, wind: wind)
+	}
 	
 	private func setConstraints() {
 		setContentView()
 		setImageView()
-		setTempStack()
 	}
 	
 	private func setContentView() {
@@ -247,7 +157,11 @@ class WeatherView: UIView {
 		mainWeatherImage.snp.makeConstraints { $0.bottom.right.equalToSuperview() }
 	}
 	
-	private func setTempStack() {
+	private func setStack(humidity: PressureHumidityWindInfoView, pressure: PressureHumidityWindInfoView, wind: PressureHumidityWindInfoView) {
+		additionalParametersStack = UIStackView(arrangedSubviews: [humidity, pressure, wind])
+		additionalParametersStack.axis = .vertical
+		additionalParametersStack.distribution = .equalSpacing
+		
 		contentView.addSubview(infoStack)
 		
 		infoStack.snp.makeConstraints { make in

@@ -96,11 +96,11 @@ class PopupView: UIView {
 	
 	// MARK: - Actions
 	
-	@objc func closeButtonPressed() {
+	@objc private func closeButtonPressed() {
 		self.delegate?.didPressButton(button: .close)
 	}
 	
-	@objc func showWeatherButtonPressed() {
+	@objc private func showWeatherButtonPressed() {
 		self.delegate?.didPressButton(button: .showWeather)
 	}
 	
