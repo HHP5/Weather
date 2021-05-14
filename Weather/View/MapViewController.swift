@@ -16,9 +16,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	private var viewModel: MapViewModelType
 	
 	private var popupView: PopupView?
-	
-	private var isPopupAdded: Bool = false
-	
+		
 	private let searchController: UISearchController = {
 		let searchController = UISearchController(searchResultsController: nil)
 		searchController.obscuresBackgroundDuringPresentation = false
@@ -27,16 +25,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		searchController.searchBar.tintColor = .black
 		return searchController
 	}()
-	
-	private let locationManager: CLLocationManager = {
-		let locationManager = CLLocationManager()
-		locationManager.desiredAccuracy = kCLLocationAccuracyBest
-		locationManager.distanceFilter = 10
-		return locationManager
-	}()
-	
-	private var currentLocation: CLLocation = CLLocation()
-	
+
 	// MARK: - Init
 	
 	init(viewModel: MapViewModelType) {
@@ -69,23 +58,21 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		view.backgroundColor = .white
 		
 		searchController.delegate = self
-		locationManager.delegate = self
+		
+		//Почему-то оно и без этого работает
+//		viewModel.locationManager.delegate = self
+		
 		mapView.delegate = self
 		searchController.searchBar.delegate = self
 		
 		setupNavigationBar()
 		setupMapView()
 		setupGestureRecognizer()
-		//		setupPopup()
 		
-		checkLocationAuthorization(status: locationManager.authorizationStatus)
-		locationManager.requestWhenInUseAuthorization()
-	}
-	
-	override func viewDidAppear(_ animated: Bool) {
-		super.viewDidAppear(animated)
-		
-		//		setupPopup()
+		if let alert = viewModel.checkLocationAuthorization() {
+			self.present(alert, animated: true, completion: nil)
+		}
+
 	}
 	
 	// MARK: - Actions (@ojbc + @IBActions)
@@ -96,7 +83,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
 		
 		self.makePoint(in: coordinate)
-		self.locationManager(locationManager, didUpdateLocations: coordinate)
+		self.zoomToLocation(didUpdateLocations: coordinate)
 	}
 	
 	// MARK: - Private Methods
@@ -104,9 +91,8 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	private func closePopup() {
 		
 		removeAnnotationsIfNeeded()
-//		popupView?.removeFromSuperview()
-		popupView?.alpha = 0
-		popupView?.isHidden = true
+		popupView?.removeFromSuperview()
+
 	}
 	
 	private func removeAnnotationsIfNeeded() {
@@ -128,27 +114,19 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		point.coordinate = coordinate
 		
 		mapView.addAnnotation(point)
-		currentLocation = CLLocation(latitude: point.coordinate.latitude, longitude: point.coordinate.longitude)
+		viewModel.currentLocation = CLLocation(latitude: point.coordinate.latitude, longitude: point.coordinate.longitude)
 		
 		addPopup()
 	}
 	
 	private func addPopup() {
-		viewModel.coordinateInPoint(location: currentLocation) { [weak self] model in
+		viewModel.coordinateInPoint()
+		
+		viewModel.onDidUpdatePopupViewModel = { [weak self] model in
 			guard let self = self else {return}
 			
 			self.popupView = PopupView(viewModel: model)
-			
-//			guard let popupView = self.popupView else {return}
-//			popupView.delegate = self
-			print(#function)
-			if self.isPopupAdded {
-				self.popupView?.isHidden = false
-				self.popupView?.alpha = 1
-			} else {
-				self.setupPopup()
-				
-			}
+			self.setupPopup()
 		}
 	}
 	
@@ -158,21 +136,18 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	}
 	
 	private func setupPopup() {
+		self.popupView?.delegate = self
+
 		guard let popupView = popupView else { return  }
-		print(#function)
-		popupView.delegate = self
 		
 		view.addSubview(popupView)
 		
 		popupView.snp.makeConstraints { make in
 			make.height.equalTo(170)
 			make.bottom.equalToSuperview().offset(-20)
-			make.left.equalToSuperview().offset(30)
-			make.right.equalToSuperview().offset(-30)
+			make.left.equalToSuperview().offset(20)
+			make.right.equalToSuperview().offset(-20)
 		}
-		popupView.isHidden = true
-		popupView.alpha = 1
-		isPopupAdded = true
 	
 	}
 	
@@ -192,32 +167,14 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 
 extension MapViewController: CLLocationManagerDelegate {
 	
-	func checkLocationAuthorization(status: CLAuthorizationStatus) {
-		switch status {
-		case .authorizedWhenInUse:
-			break
-		case .denied:
-			let alert = AlertService.alert(title: "Вы запретили использование местоположения",
-										   message: "Измените это в настройках",
-										   url: URL(string: UIApplication.openSettingsURLString))
+	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+		if let alert = viewModel.checkLocationAuthorization() {
 			self.present(alert, animated: true)
-		case .notDetermined:
-			locationManager.requestWhenInUseAuthorization()
-		case .restricted:
-			break
-		case .authorizedAlways:
-			break
-		@unknown default:
-			break
 		}
 	}
 	
-	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-		checkLocationAuthorization(status: locationManager.authorizationStatus)
-	}
-	
 	//	 Zoom to current location
-	func locationManager(_ manager: CLLocationManager, didUpdateLocations coordinate: CLLocationCoordinate2D) {
+	func zoomToLocation(didUpdateLocations coordinate: CLLocationCoordinate2D) {
 		
 		let coordinateRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: 1000000, longitudinalMeters: 1000000)
 		mapView.setRegion(coordinateRegion, animated: true)
@@ -225,7 +182,9 @@ extension MapViewController: CLLocationManagerDelegate {
 	}
 	
 	func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-		checkLocationAuthorization(status: locationManager.authorizationStatus)
+		if let alert = viewModel.checkLocationAuthorization() {
+			self.present(alert, animated: true)
+		}
 	}
 	
 	func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -247,7 +206,7 @@ extension MapViewController: UISearchBarDelegate {
 			
 			guard let self = self else {return}
 			
-			self.locationManager(self.locationManager, didUpdateLocations: coordinate)
+			self.zoomToLocation(didUpdateLocations: coordinate)
 			
 			DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 				self.makePoint(in: coordinate)
@@ -271,7 +230,7 @@ extension MapViewController: PopupButtonDelegate {
 			
 		case .showWeather:
 			
-			let weatherViewMode = viewModel.weatherPoint(location: currentLocation)
+			let weatherViewMode = viewModel.weatherPoint()
 			let destinationVC = WeatherViewController(viewModel: weatherViewMode)
 			destinationVC.modalPresentationStyle = .fullScreen
 			self.navigationController?.pushViewController(destinationVC, animated: true)

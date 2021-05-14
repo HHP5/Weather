@@ -71,13 +71,13 @@ class PopupView: UIView {
 	
 	required init(viewModel: PopupViewModelType) {
 		self.viewModel = viewModel
-		
 		super.init(frame: .zero)
-		self.shadow()
 		
+		self.setContainer()
+		self.shadow()
+
 		viewModel.getCityNameAndCoordinate()
 		self.bindToViewModel()
-		
 	}
 	
 	required init?(coder: NSCoder) {
@@ -111,6 +111,7 @@ class PopupView: UIView {
 	
 	private func bindToViewModel() {
 		viewModel.didFindLocality = { [weak self] in
+			print(#function)
 			self?.updatePage()
 			self?.setConstraints()
 		}
@@ -122,7 +123,7 @@ class PopupView: UIView {
 	}
 	
 	private func setConstraints() {
-		setContainer()
+//		setContainer()
 		setLabelStack()
 		setShowWeatherButton()
 		setCloseButton()

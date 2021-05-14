@@ -8,10 +8,17 @@
 import Foundation
 import MapKit
 
-protocol MapViewModelType {	
-	func coordinateInPoint(location: CLLocation, completion: @escaping (PopupViewModelType) -> Void)
+protocol MapViewModelType {
+//	var locationManager: CLLocationManager {get set}
+	var currentLocation: CLLocation {get set}
 	
-	func weatherPoint(location: CLLocation) -> WeatherViewModel
+	func coordinateInPoint()
+	
+	func weatherPoint() -> WeatherViewModel
 	
 	func searchBarSearchButtonClicked(for searchText: String, completion: @escaping (CLLocationCoordinate2D) -> Void)
+	
+	var onDidUpdatePopupViewModel: ((PopupViewModelType) -> Void)? {get set}
+	
+	func checkLocationAuthorization() -> UIAlertController?
 }
