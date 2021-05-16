@@ -14,7 +14,8 @@ class PopupView: UIView {
 	var viewModel: PopupViewModelType? {
 		didSet(viewModel) {
 
-			self.bindToViewModel()
+			localityLabel.text = viewModel?.locality
+			coordinateLabel.text = viewModel?.coordinate
 		}
 	}
 	weak var delegate: PopupButtonDelegate?
@@ -111,13 +112,6 @@ class PopupView: UIView {
 	
 	// MARK: - Private Methods
 	
-	private func bindToViewModel() {
-		viewModel?.didFindLocality = { [self] in
-
-			localityLabel.text = viewModel?.locality
-			coordinateLabel.text = viewModel?.coordinate
-		}
-	}
 	
 	private func setConstraints() {
 		setContainer()

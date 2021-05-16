@@ -10,7 +10,7 @@ import Foundation
 protocol PopupViewModelType {
 	var locality: String {get set}
 	var coordinate: String {get}
-	func getCityNameAndCoordinate()
+	func getCityNameAndCoordinate(handler: @escaping (String) -> Void)
 	var didFindLocality: (() -> Void)? {get set}
 
 }

@@ -31,15 +31,16 @@ class PopupViewModel: PopupViewModelType {
 
 	init(location: CLLocation) {
 		self.location = location
-		self.getCityNameAndCoordinate()
+		self.getCityNameAndCoordinate { name in
+			self.locality = name
+		}
 	}
 
-	 func getCityNameAndCoordinate() {
+	func getCityNameAndCoordinate(handler: @escaping (String) -> Void) {
 	//  В таком варианте он заходит в функцию  getCityNameAndCoordinate, но в lookUpLocationName не идет. Не знаю почему
 		// был еще и другой вариант у меня, но он не работает при первом нажатии - не ищет данные
 		location.lookUpLocationName { name in
-			self.locality = name
-			DispatchQueue.main.async { self.didFindLocality?() }
+			handler(name)
 		}
 		
 	}
