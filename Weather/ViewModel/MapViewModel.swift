@@ -10,6 +10,8 @@ import MapKit
 
 class MapViewModel: MapViewModelType {
 	
+	var currentLocation = CLLocation()
+
 	var onDidUpdatePopupViewModel: ((PopupViewModelType) -> Void)?
 	
 	private var locationManager: CLLocationManager = {
@@ -19,10 +21,8 @@ class MapViewModel: MapViewModelType {
 		return locationManager
 	}()
 	
-	var currentLocation = CLLocation()
-	
 	func coordinateInPoint() {
-		currentLocation.lookUpLocationName { [weak self] _ in
+		currentLocation.lookUpLocationName { [weak self] location in
 			guard let self = self else {return}
 			self.onDidUpdatePopupViewModel?(PopupViewModel(location: self.currentLocation))
 		}

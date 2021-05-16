@@ -11,7 +11,12 @@ import SnapKit
 class PopupView: UIView {
 	// MARK: - Properties
 	
-	var viewModel: PopupViewModelType
+	var viewModel: PopupViewModelType? {
+		didSet(viewModel) {
+
+			self.bindToViewModel()
+		}
+	}
 	weak var delegate: PopupButtonDelegate?
 	
 	// MARK: - IBOutlets 
@@ -69,17 +74,12 @@ class PopupView: UIView {
 	
 	// MARK: - Init
 	
-	required init(viewModel: PopupViewModelType) {
-		self.viewModel = viewModel
+	required override init(frame: CGRect) {
 		super.init(frame: .zero)
-		
-		self.setContainer()
-		self.shadow()
 
-		viewModel.getCityNameAndCoordinate()
-		self.bindToViewModel()
+		self.setConstraints()
 	}
-	
+
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
@@ -99,34 +99,32 @@ class PopupView: UIView {
 	
 	// MARK: - Actions
 	
-	@objc func closeButtonPressed() {
+	@objc
+	func closeButtonPressed() {
 		self.delegate?.didPressButton(button: .close)
 	}
 	
-	@objc func showWeatherButtonPressed() {
+	@objc
+	func showWeatherButtonPressed() {
 		self.delegate?.didPressButton(button: .showWeather)
 	}
 	
 	// MARK: - Private Methods
 	
 	private func bindToViewModel() {
-		viewModel.didFindLocality = { [weak self] in
-			print(#function)
-			self?.updatePage()
-			self?.setConstraints()
+		viewModel?.didFindLocality = { [self] in
+
+			localityLabel.text = viewModel?.locality
+			coordinateLabel.text = viewModel?.coordinate
 		}
 	}
 	
-	private func updatePage() {
-		localityLabel.text = viewModel.locality
-		coordinateLabel.text = viewModel.coordinate
-	}
-	
 	private func setConstraints() {
-//		setContainer()
+		setContainer()
 		setLabelStack()
 		setShowWeatherButton()
 		setCloseButton()
+		shadow()
 	}
 	
 	private func setLabelStack() {

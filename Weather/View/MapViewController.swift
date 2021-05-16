@@ -15,7 +15,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	// MARK: - Properties
 	private var viewModel: MapViewModelType
 	
-	private var popupView: PopupView?
+	private var popupView = PopupView()
 		
 	private let searchController: UISearchController = {
 		let searchController = UISearchController(searchResultsController: nil)
@@ -58,10 +58,6 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		view.backgroundColor = .white
 		
 		searchController.delegate = self
-		
-		//Почему-то оно и без этого работает
-//		viewModel.locationManager.delegate = self
-		
 		mapView.delegate = self
 		searchController.searchBar.delegate = self
 		
@@ -72,12 +68,14 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		if let alert = viewModel.checkLocationAuthorization() {
 			self.present(alert, animated: true, completion: nil)
 		}
-
+		
+		setupPopup()
 	}
 	
 	// MARK: - Actions (@ojbc + @IBActions)
 	
-	@objc private func handleTap(gestureRecognizer: UILongPressGestureRecognizer) {
+	@objc
+	private func handleTap(gestureRecognizer: UILongPressGestureRecognizer) {
 		
 		let location = gestureRecognizer.location(in: mapView)
 		let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
@@ -91,7 +89,9 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	private func closePopup() {
 		
 		removeAnnotationsIfNeeded()
-		popupView?.removeFromSuperview()
+//		popupView.removeFromSuperview()
+		popupView.alpha = 0
+		
 
 	}
 	
@@ -120,13 +120,13 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	}
 	
 	private func addPopup() {
+		
 		viewModel.coordinateInPoint()
 		
 		viewModel.onDidUpdatePopupViewModel = { [weak self] model in
 			guard let self = self else {return}
-			
-			self.popupView = PopupView(viewModel: model)
-			self.setupPopup()
+			self.popupView.viewModel = model
+			self.popupView.alpha = 1
 		}
 	}
 	
@@ -136,10 +136,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	}
 	
 	private func setupPopup() {
-		self.popupView?.delegate = self
-
-		guard let popupView = popupView else { return  }
-		
+		self.popupView.delegate = self		
 		view.addSubview(popupView)
 		
 		popupView.snp.makeConstraints { make in
@@ -149,6 +146,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 			make.right.equalToSuperview().offset(-20)
 		}
 	
+		popupView.alpha = 0
 	}
 	
 	private func setupMapView() {
