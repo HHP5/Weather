@@ -12,7 +12,7 @@ class PopupView: UIView {
 	// MARK: - Properties
 	
 	var viewModel: PopupViewModelType? {
-		didSet(viewModel) {
+		willSet(viewModel) {
 
 			localityLabel.text = viewModel?.locality
 			coordinateLabel.text = viewModel?.coordinate

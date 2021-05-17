@@ -22,9 +22,9 @@ class MapViewModel: MapViewModelType {
 	}()
 	
 	func coordinateInPoint() {
-		currentLocation.lookUpLocationName { [weak self] location in
+		currentLocation.lookUpLocationName { [weak self] locality in
 			guard let self = self else {return}
-			self.onDidUpdatePopupViewModel?(PopupViewModel(location: self.currentLocation))
+			self.onDidUpdatePopupViewModel?(PopupViewModel(location: self.currentLocation, locality: locality))
 		}
 	}
 	

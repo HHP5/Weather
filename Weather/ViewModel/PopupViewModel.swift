@@ -9,14 +9,13 @@ import Foundation
 import MapKit
 
 class PopupViewModel: PopupViewModelType {
-	
 	var coordinate: String {
 		return "\(latitude)   \(longitude)"
 	}
 	
 	private var location: CLLocation
 
-	var locality: String = ""
+	var locality: String
 	
 	private var latitude: String {
 		let lat = location.coordinate.latitude
@@ -29,20 +28,9 @@ class PopupViewModel: PopupViewModelType {
 	}
 	var didFindLocality: (() -> Void)?
 
-	init(location: CLLocation) {
+	init(location: CLLocation, locality: String) {
 		self.location = location
-		self.getCityNameAndCoordinate { name in
-			self.locality = name
-		}
-	}
-
-	func getCityNameAndCoordinate(handler: @escaping (String) -> Void) {
-	//  В таком варианте он заходит в функцию  getCityNameAndCoordinate, но в lookUpLocationName не идет. Не знаю почему
-		// был еще и другой вариант у меня, но он не работает при первом нажатии - не ищет данные
-		location.lookUpLocationName { name in
-			handler(name)
-		}
-		
+		self.locality = locality
 	}
 	
 	private func convertDDintoDMS(location: CLLocationDegrees, _ locationDegrees: LocationDegrees) -> String {
