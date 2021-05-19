@@ -5,20 +5,22 @@
 //  Created by Екатерина Григорьева on 02.05.2021.
 //
 
-import Foundation
+import UIKit
 import MapKit
 
 protocol MapViewModelType {
-//	var locationManager: CLLocationManager {get set}
 	var currentLocation: CLLocation {get set}
 	
-	func coordinateInPoint()
+	var onDidUpdateCurrentLocation: ((CLLocationCoordinate2D) -> Void)? {get set}
 	
-	func weatherPoint() -> WeatherViewModel
-	
-	func searchBarSearchButtonClicked(for searchText: String, completion: @escaping (CLLocationCoordinate2D) -> Void)
+	var notFoundAnyLocality: ((UIAlertController) -> Void)? {get set}
 	
 	var onDidUpdatePopupViewModel: ((PopupViewModelType) -> Void)? {get set}
 	
-	func checkLocationAuthorization() -> UIAlertController?
+	func weatherPoint() -> WeatherViewModel
+	
+	func coordinateInPoint()
+
+	func search(for searchText: String)
+
 }

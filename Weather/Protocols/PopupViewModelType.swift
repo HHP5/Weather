@@ -10,6 +10,4 @@ import Foundation
 protocol PopupViewModelType {
 	var locality: String {get}
 	var coordinate: String {get}
-	var didFindLocality: (() -> Void)? {get set}
-
 }

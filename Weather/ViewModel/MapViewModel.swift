@@ -9,10 +9,15 @@ import Foundation
 import MapKit
 
 class MapViewModel: MapViewModelType {
-	
 	var currentLocation = CLLocation()
 
+	var onDidUpdateCurrentLocation: ((CLLocationCoordinate2D) -> Void)?
+	
+	var notFoundAnyLocality: ((UIAlertController) -> Void)?
+	
 	var onDidUpdatePopupViewModel: ((PopupViewModelType) -> Void)?
+	
+	private let geocoderService = GeocoderService()
 	
 	private var locationManager: CLLocationManager = {
 		let locationManager = CLLocationManager()
@@ -22,7 +27,7 @@ class MapViewModel: MapViewModelType {
 	}()
 	
 	func coordinateInPoint() {
-		currentLocation.lookUpLocationName { [weak self] locality in
+		geocoderService.lookUpLocationName(location: currentLocation) { [weak self] locality in
 			guard let self = self else {return}
 			self.onDidUpdatePopupViewModel?(PopupViewModel(location: self.currentLocation, locality: locality))
 		}
@@ -32,31 +37,16 @@ class MapViewModel: MapViewModelType {
 		return WeatherViewModel(location: currentLocation)
 	}
 	
-	func searchBarSearchButtonClicked(for searchText: String, completion: @escaping (CLLocationCoordinate2D) -> Void) {
-		self.locationManager.getCoordinate(addressString: searchText) { location in
-			completion(location.coordinate)
+	func search(for searchText: String) {
+		geocoderService.getCoordinate(addressString: searchText) { [weak self] (result: SearchResult) in
+			
+			switch result {
+			case .success(let location):
+				DispatchQueue.main.async { self?.onDidUpdateCurrentLocation?(location.coordinate) }
+			case .failure(let alert):
+				DispatchQueue.main.async { self?.notFoundAnyLocality?(alert) }
+			}
 		}
 	}
 	
-	func checkLocationAuthorization() -> UIAlertController? {
-		var result: UIAlertController? 
-		switch locationManager.authorizationStatus {
-		case .authorizedWhenInUse:
-			break
-		case .denied:
-			let alert = AlertService.alert(title: "Вы запретили использование местоположения",
-										   message: "Измените это в настройках",
-										   url: URL(string: UIApplication.openSettingsURLString))
-			result = alert
-		case .notDetermined:
-			locationManager.requestWhenInUseAuthorization()
-		case .restricted:
-			break
-		case .authorizedAlways:
-			break
-		@unknown default:
-			break
-		}
-		return result
-	}
 }

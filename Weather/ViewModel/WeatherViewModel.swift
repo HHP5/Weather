@@ -10,39 +10,35 @@ import UIKit
 import MapKit
 
 class WeatherViewModel: WeatherViewModelType {
+	// MARK: - Properties
+
+	var location: CLLocation
+	var didFinishRequest: (() -> Void)?
+	var didUpdateData: (() -> Void)?
+	var didReceiveError: ((Error) -> Void)?
+	var locality: String?
+	var temperature: String?
+	var humidity: String?
+	var wind: String?
+	var pressure: String?
+	var weatherDescription: String?
+	var imageWeather: URL?
+	var mainWeatherImage: UIImage?
+	
+	private let geocoderService = GeocoderService()
 	private var serviceLayer = ServiceLayer()
 	
-	var location: CLLocation
-	
-	var didFinishRequest: (() -> Void)?
-	
-	var didUpdateData: (() -> Void)?
-	
-	var didReceiveError: ((Error) -> Void)?
+	// MARK: - Init
 
 	init(location: CLLocation) {
 		self.location = location
 	}
 	
-	var locality: String?
-	
-	var temperature: String?
-	
-	var humidity: String?
-	
-	var wind: String?
-	
-	var pressure: String?
-	
-	var weatherDescription: String?
-	
-	var imageWeather: URL?
-	
-	var mainWeatherImage: UIImage?
-	
-	func fetcingWeather() {
+	// MARK: - Public Methods
+
+	func fetchingWeather() {
 		
-		location.lookUpLocationName { [weak self] city in
+		geocoderService.lookUpLocationName(location: location) {  [weak self] city in
 			
 			self?.locality = city
 						
@@ -66,103 +62,19 @@ class WeatherViewModel: WeatherViewModelType {
 			}
 		}
 	}
-	
+	// MARK: - Private Methods
+
 	private func handleResult(_ result: WeatherResponse) {
 		
-		self.handleWeatherIcon(result.weather.first)
+		self.temperature = result.main.calculateTemperature()
+		self.pressure = result.main.calculatePressure()
+		self.wind = result.wind.calculateWindDirection()
+		self.humidity = result.main.calculateHumidity()
 		
-		self.handlePressure(result.main.pressure)
-		
-		self.handleWindParameters(result.wind)
-		
-		self.mainWeatherImage(icon: result.weather.first?.icon)
-		
-		self.weatherDescription = result.weather.first?.description
-		
-		self.handleTemperature(result.main.temp)
-		
-		self.handleHumidity(result.main.humidity)
-	}
-		
-	private func handleHumidity(_ humidity: Double) {
-		self.humidity = String(Int(humidity)) + " %"
-	}
-	
-	private func handleWeatherIcon(_ icon: WeatherIcon?) {
-		guard  let picture = icon,
-			   let url = URL(string: "http://openweathermap.org/img/wn/\(picture.icon.rawValue)@2x.png") else { return }
-		
-		self.imageWeather = url
-	}
-	
-	private func handleTemperature(_ temperature: Double) {
-		self.temperature = String(Int(temperature - 273.15))
-	}
-	
-	private func handlePressure(_ pressure: Double) {
-		self.pressure = String(format: "%.2f", pressure * 0.750062) + " mm Hg"
-	}
-	
-	private func mainWeatherImage(icon: Icon?) {
-		
-		guard let icon = icon else { return  }
-		
-		switch icon {
-		case .brokenCloudsDay, .brokenCloudsNight:
-			self.mainWeatherImage = WeatherImage.brokenClouds.image
-		case .clearSkyNight, .clearSkyDay:
-			self.mainWeatherImage = WeatherImage.clearSky.image
-		case .fewCloudsNight, .fewCloudsDay:
-			self.mainWeatherImage = WeatherImage.fewClouds.image
-		case .mistNight, .mistDay:
-			self.mainWeatherImage = WeatherImage.mist.image
-		case .rainNight, .rainDay:
-			self.mainWeatherImage = WeatherImage.rain.image
-		case .scatteredCloudsNight, .scatteredCloudsDay:
-			self.mainWeatherImage = WeatherImage.scatteredClouds.image
-		case .showerRainNight, .showerRainDay:
-			self.mainWeatherImage = WeatherImage.showerRain.image
-		case .snowDay, .snowNight:
-			self.mainWeatherImage = WeatherImage.snow.image
-		case .thunderstormNight, .thunderstormDay:
-			self.mainWeatherImage = WeatherImage.thunderstorm.image
+		if let icon = result.weather.first {
+			self.imageWeather = icon.url
+			self.weatherDescription = icon.description
+			self.mainWeatherImage = WeatherImage(icon: icon.icon).mainImage
 		}
 	}
-
-	private func handleWindParameters(_ wind: WeatherWind) {
-		var result = ""
-		
-		let deg = wind.deg
-		
-		switch deg {
-		
-		case 0...22:
-			result += "N"
-		case 23...67:
-			result += "NE"
-		case 68...112:
-			result += "E"
-		case 113...157:
-			result += "SE"
-		case 158...202:
-			result += "S"
-		case 203...247:
-			result += "SW"
-		case 248...292:
-			result += "W"
-		case 293...337:
-			result += "NW"
-		case 334...360:
-			result += "N"
-		default:
-			return
-		}
-		
-		let speed = Int(wind.speed)
-		
-		result += " \(speed) m/s"
-		
-		self.wind = result
-	}
-
 }

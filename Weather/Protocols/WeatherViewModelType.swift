@@ -24,12 +24,13 @@ protocol WeatherViewModelType {
 	var mainWeatherImage: UIImage? {get}
 	
 	var imageWeather: URL? {get}
-	
-	func fetcingWeather()
-	
+		
 	var didFinishRequest: (() -> Void)? {get set}
 	
 	var didUpdateData: (() -> Void)? {get set}
 	
 	var didReceiveError: ((Error) -> Void)? {get set}
+	
+	func fetchingWeather()
+
 }

@@ -85,40 +85,34 @@ class PopupView: UIView {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
-	// MARK: - Public Methods
-	
-	func setContainer() {
-		self.addSubview(container)
-		
-		container.snp.makeConstraints { make in
-			make.height.equalTo(170)
-			make.bottom.equalToSuperview().offset(-20)
-			make.left.equalToSuperview().offset(30)
-			make.right.equalToSuperview().offset(-30)
-		}
-	}
-	
 	// MARK: - Actions
 	
 	@objc
-	func closeButtonPressed() {
+	private func closeButtonPressed() {
 		self.delegate?.didPressButton(button: .close)
 	}
 	
 	@objc
-	func showWeatherButtonPressed() {
+	private func showWeatherButtonPressed() {
 		self.delegate?.didPressButton(button: .showWeather)
 	}
 	
 	// MARK: - Private Methods
-	
 	
 	private func setConstraints() {
 		setContainer()
 		setLabelStack()
 		setShowWeatherButton()
 		setCloseButton()
-		shadow()
+		setupShadow()
+	}
+	
+	private func setContainer() {
+		self.addSubview(container)
+		
+		container.snp.makeConstraints { make in
+			make.edges.equalToSuperview()
+		}
 	}
 	
 	private func setLabelStack() {
@@ -151,7 +145,7 @@ class PopupView: UIView {
 		}
 	}
 	
-	private func shadow() {
+	private func setupShadow() {
 		self.layer.shadowColor = UIColor.black.cgColor
 		self.layer.shadowOpacity = 1
 		self.layer.shadowOffset = .zero

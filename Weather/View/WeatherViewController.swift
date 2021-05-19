@@ -40,7 +40,7 @@ class WeatherViewController: UIViewController {
 		setupWeatherView()
 		setupNavigationBar()
 		
-		viewModel.fetcingWeather()
+		viewModel.fetchingWeather()
 		bindToViewModel()
 		
 		weatherView.startActivityIndicator()

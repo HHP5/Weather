@@ -91,7 +91,7 @@ class WeatherView: UIView {
 		let humidity = PressureHumidityWindInfoView(parameter: AdditionalWeatherParameters.humidity.rawValue, value: value.humidity)
 		let wind = PressureHumidityWindInfoView(parameter: AdditionalWeatherParameters.wind.rawValue, value: value.windValue)
 		
-		makeParametersStack(parameters: [humidity, pressure, wind])
+		makeParametersStack(parameters: [humidity, wind, pressure])
 	}
 	
 	private func setConstraints() {
@@ -120,7 +120,7 @@ class WeatherView: UIView {
 		self.addSubview(mainWeatherImage)
 		mainWeatherImage.snp.makeConstraints { make in
 			make.bottom.equalToSuperview()
-			make.right.equalToSuperview().offset(15)
+			make.right.equalToSuperview()
 		}
 	}
 	

@@ -14,9 +14,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	
 	// MARK: - Properties
 	private var viewModel: MapViewModelType
-	
 	private var popupView = PopupView()
-		
 	private let searchController: UISearchController = {
 		let searchController = UISearchController(searchResultsController: nil)
 		searchController.obscuresBackgroundDuringPresentation = false
@@ -25,7 +23,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		searchController.searchBar.tintColor = .black
 		return searchController
 	}()
-
+	
 	// MARK: - Init
 	
 	init(viewModel: MapViewModelType) {
@@ -64,12 +62,8 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		setupNavigationBar()
 		setupMapView()
 		setupGestureRecognizer()
-		
-		if let alert = viewModel.checkLocationAuthorization() {
-			self.present(alert, animated: true, completion: nil)
-		}
-		
 		setupPopup()
+		
 	}
 	
 	// MARK: - Actions (@ojbc + @IBActions)
@@ -89,10 +83,8 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	private func closePopup() {
 		
 		removeAnnotationsIfNeeded()
-//		popupView.removeFromSuperview()
 		popupView.alpha = 0
 		
-
 	}
 	
 	private func removeAnnotationsIfNeeded() {
@@ -109,6 +101,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	
 	private func makePoint(in coordinate: CLLocationCoordinate2D) {
 		closePopup()
+		self.searchController.searchBar.endEditing(true)
 		
 		let point = MKPointAnnotation()
 		point.coordinate = coordinate
@@ -142,10 +135,9 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 		popupView.snp.makeConstraints { make in
 			make.height.equalTo(170)
 			make.bottom.equalToSuperview().offset(-20)
-			make.left.equalToSuperview().offset(20)
-			make.right.equalToSuperview().offset(-20)
+			make.leading.trailing.equalToSuperview().inset(20)
 		}
-	
+		
 		popupView.alpha = 0
 	}
 	
@@ -158,31 +150,17 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 			make.left.right.equalToSuperview()
 		}	
 	}
-	
 }
 
 // MARK: - CLLocationManagerDelegate
 
 extension MapViewController: CLLocationManagerDelegate {
-	
-	func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-		if let alert = viewModel.checkLocationAuthorization() {
-			self.present(alert, animated: true)
-		}
-	}
-	
 	//	 Zoom to current location
 	func zoomToLocation(didUpdateLocations coordinate: CLLocationCoordinate2D) {
 		
 		let coordinateRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: 1000000, longitudinalMeters: 1000000)
 		mapView.setRegion(coordinateRegion, animated: true)
 		
-	}
-	
-	func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-		if let alert = viewModel.checkLocationAuthorization() {
-			self.present(alert, animated: true)
-		}
 	}
 	
 	func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -195,15 +173,19 @@ extension MapViewController: CLLocationManagerDelegate {
 
 extension MapViewController: UISearchBarDelegate {
 	
+	func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+		closePopup()
+	}
+	
 	func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
 		self.closePopup()
 		self.searchController.searchBar.endEditing(true)
 		guard let text = searchController.searchBar.text else { return }
 		
-		viewModel.searchBarSearchButtonClicked(for: text) { [weak self] coordinate in
-			
+		viewModel.search(for: text)
+		
+		viewModel.onDidUpdateCurrentLocation = { [weak self] coordinate in
 			guard let self = self else {return}
-			
 			self.zoomToLocation(didUpdateLocations: coordinate)
 			
 			DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -211,6 +193,11 @@ extension MapViewController: UISearchBarDelegate {
 				self.searchController.dismiss(animated: true, completion: nil)
 			}
 		}
+		
+		viewModel.notFoundAnyLocality = { [weak self] alert in
+			self?.present(alert, animated: true, completion: nil)
+		}
+		
 	}
 	
 }
@@ -230,7 +217,6 @@ extension MapViewController: PopupButtonDelegate {
 			
 			let weatherViewMode = viewModel.weatherPoint()
 			let destinationVC = WeatherViewController(viewModel: weatherViewMode)
-			destinationVC.modalPresentationStyle = .fullScreen
 			self.navigationController?.pushViewController(destinationVC, animated: true)
 			
 			closePopup()
