@@ -19,13 +19,6 @@ class MapViewModel: MapViewModelType {
 	
 	private let geocoderService = GeocoderService()
 	
-	private var locationManager: CLLocationManager = {
-		let locationManager = CLLocationManager()
-		locationManager.desiredAccuracy = kCLLocationAccuracyBest
-		locationManager.distanceFilter = 10
-		return locationManager
-	}()
-	
 	func coordinateInPoint() {
 		geocoderService.lookUpLocationName(location: currentLocation) { [weak self] locality in
 			guard let self = self else {return}

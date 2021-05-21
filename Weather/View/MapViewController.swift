@@ -79,7 +79,13 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	}
 	
 	// MARK: - Private Methods
-	
+	private func zoomToLocation(didUpdateLocations coordinate: CLLocationCoordinate2D) {
+		
+		let coordinateRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: 1000000, longitudinalMeters: 1000000)
+		mapView.setRegion(coordinateRegion, animated: true)
+		
+	}
+
 	private func closePopup() {
 		
 		removeAnnotationsIfNeeded()
@@ -152,23 +158,6 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate, MKMapVie
 	}
 }
 
-// MARK: - CLLocationManagerDelegate
-
-extension MapViewController: CLLocationManagerDelegate {
-	//	 Zoom to current location
-	func zoomToLocation(didUpdateLocations coordinate: CLLocationCoordinate2D) {
-		
-		let coordinateRegion = MKCoordinateRegion(center: coordinate, latitudinalMeters: 1000000, longitudinalMeters: 1000000)
-		mapView.setRegion(coordinateRegion, animated: true)
-		
-	}
-	
-	func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-		let alert = AlertService.alert(message: error.localizedDescription)
-		present(alert, animated: true)
-	}
-	
-}
 // MARK: - UISearchBarDelegate
 
 extension MapViewController: UISearchBarDelegate {
